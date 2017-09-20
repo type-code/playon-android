@@ -1,4 +1,4 @@
-package ga.chrom_web.player.multiplayer
+package ga.chrom_web.player.multiplayer.view
 
 
 import android.app.Fragment
@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import com.google.android.youtube.player.YouTubeInitializationResult
 import com.google.android.youtube.player.YouTubePlayer
 import com.google.android.youtube.player.YouTubePlayerView
+import ga.chrom_web.player.multiplayer.R
 
 
 /**
@@ -27,6 +28,7 @@ class PlayerFragment : Fragment(), YouTubePlayer.OnInitializedListener {
         val youtubeView:YouTubePlayerView = view.findViewById(R.id.youtube_view);
 
         youtubeView.initialize(key, this);
+
         return view
     }
 

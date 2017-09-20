@@ -1,8 +1,8 @@
-package ga.chrom_web.player.multiplayer
+package ga.chrom_web.player.multiplayer.view
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import com.google.android.youtube.player.YouTubeBaseActivity
+import ga.chrom_web.player.multiplayer.R
 
 class PlayerActivity : YouTubeBaseActivity() {
 

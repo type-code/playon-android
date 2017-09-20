@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ga.chrom_web.player.multiplayer.MainActivity">
+    tools:context="ga.chrom_web.player.multiplayer.view.MainActivity">
 
     <TextView
         android:layout_width="wrap_content"
