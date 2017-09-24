@@ -16,7 +16,7 @@ public class Player {
             }
 
             @Override
-            public void onPlay(PlayData play) {
+            public void onPlay(VideoData play) {
 
             }
 

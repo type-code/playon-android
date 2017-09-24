@@ -13,6 +13,7 @@ import io.socket.client.Socket;
 public class AppModule {
 
     private static final String HOST = "http://player.chrom-web.ga:8080";
+//    private static final String HOST = "http://93.175.221.13:8080";
 
     @Provides
     @Singleton

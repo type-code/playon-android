@@ -11,6 +11,9 @@ import io.socket.client.Socket;
 
 public class ConnectionManager {
 
+    private static final String EVENT_CONNECTED = "connected";
+    private static final String EVENT_JOIN = "join";
+
     @Inject
     public Socket socket;
 
@@ -18,17 +21,21 @@ public class ConnectionManager {
 
     public ConnectionManager() {
         App.getComponent().inject(this);
-        socket.connect();
         subscribeOnEvents();
     }
 
+    public void connect() {
+        socket.connect();
+    }
+
+    public void setConnectionListener(ConnectionListener connectionListener) {
+        this.connectionListener = connectionListener;
+    }
+
     private void subscribeOnEvents() {
-        socket.on("connected", args -> {
-            // TODO: do something on connect
-            // send join
-            System.out.println("connected");
+        socket.on(EVENT_CONNECTED, args -> {
             if (connectionListener != null) {
-                connectionListener.connected(ParseUtil.parseConnectionData(args[0]));
+                connectionListener.connected(JsonUtil.parseConnectionData(args[0]));
             }
         });
     }
@@ -40,7 +47,7 @@ public class ConnectionManager {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        socket.emit("join", jsonObject, (Ack) args -> {
+        socket.emit(EVENT_JOIN, jsonObject, (Ack) args -> {
             if (connectionListener != null) {
                 connectionListener.joined();
             }

@@ -1,10 +1,14 @@
 package ga.chrom_web.player.multiplayer;
 
 
+import com.google.gson.annotations.SerializedName;
+
 public class ConnectionData {
     private String video;
     private double time;
+    @SerializedName("play")
     private boolean isPlaying;
+    @SerializedName("light")
     private boolean isLight;
 
     public ConnectionData() {
@@ -20,6 +24,10 @@ public class ConnectionData {
 
     public double getTime() {
         return time;
+    }
+
+    public int getTimeInMilli() {
+        return (int)time * 1000;
     }
 
     public void setTime(double time) {

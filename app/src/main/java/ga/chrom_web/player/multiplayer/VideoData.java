@@ -1,18 +1,18 @@
 package ga.chrom_web.player.multiplayer;
 
 
-class PlayData {
+public class VideoData {
     private String video;
     private double time;
     private String nick;
 
-    public PlayData() {
+
+    public VideoData() {
     }
 
-    public PlayData(String video, double time, String nick) {
-        this.video = video;
-        this.time = time;
-        this.nick = nick;
+
+    public int getTimeInMilli() {
+        return (int)time * 1000;
     }
 
     public String getVideo() {
