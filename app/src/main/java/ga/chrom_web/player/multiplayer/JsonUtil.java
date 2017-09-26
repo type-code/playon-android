@@ -6,8 +6,6 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Map;
-
 public class JsonUtil {
 
 
@@ -31,14 +29,30 @@ public class JsonUtil {
         return gson.fromJson(data, ConnectionData.class);
     }
 
+    public static <T> T jsonToObject(Object jsonObj, Class<T> type) {
+        String data = jsonObj.toString();
+        Gson gson = new Gson();
+        return gson.fromJson(data, type);
+    }
 
-    public static int parseRewind(Object objects) {
+
+    public static int parseRewind(Object arg) {
         try {
-            JSONObject jsonObject = ((JSONObject) objects);
+            JSONObject jsonObject = ((JSONObject) arg);
             return jsonObject.getInt("second");
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public static boolean parseToggleLight(Object arg) {
+        try {
+            JSONObject jsonObject = ((JSONObject) arg);
+            return jsonObject.getBoolean("light");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

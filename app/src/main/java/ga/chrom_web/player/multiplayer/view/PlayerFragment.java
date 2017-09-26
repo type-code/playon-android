@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import ga.chrom_web.player.multiplayer.BuildConfig;
 import ga.chrom_web.player.multiplayer.PlayerViewModel;
 import ga.chrom_web.player.multiplayer.R;
 import ga.chrom_web.player.multiplayer.databinding.FragmentPlayerBinding;
+import ga.chrom_web.player.multiplayer.view.adapter.ChatAdapter;
 
 
 public class PlayerFragment extends Fragment implements YouTubePlayer.OnInitializedListener {
@@ -28,6 +30,7 @@ public class PlayerFragment extends Fragment implements YouTubePlayer.OnInitiali
     private PlayerViewModel mViewModel;
     private YouTubePlayerSupportFragment mYouTubeFragment;
     private FragmentPlayerBinding mBinding;
+    private ChatAdapter mChatAdapter;
     private Handler mHandler;
     private boolean mIsProgressActive;
 
@@ -42,6 +45,11 @@ public class PlayerFragment extends Fragment implements YouTubePlayer.OnInitiali
         mYouTubeFragment.initialize(BuildConfig.YouTubeApiKey, this);
 
         mHandler = new Handler(Looper.getMainLooper());
+
+        mChatAdapter = new ChatAdapter();
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        mBinding.rvChat.setLayoutManager(layoutManager);
+        mBinding.rvChat.setAdapter(mChatAdapter);
 
         return mBinding.getRoot();
     }
@@ -105,12 +113,10 @@ public class PlayerFragment extends Fragment implements YouTubePlayer.OnInitiali
         mBinding.pbVideoProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
             }
 
             @Override

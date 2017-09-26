@@ -42,7 +42,7 @@ public class ConnectionData {
         isPlaying = playing;
     }
 
-    public boolean isLight() {
+    public boolean isWhiteLight() {
         return isLight;
     }
 

@@ -10,28 +10,22 @@ import javax.inject.Inject;
 import io.socket.client.Ack;
 import io.socket.client.Socket;
 
-public class PlayerManager {
+public class PlayerManager extends Manager {
 
     private static final String EVENT_PLAY = "play";
     private static final String EVENT_PAUSE = "pause";
     private static final String EVENT_REWIND = "rewind";
     private static final String EVENT_VIDEO_TIME = "video_time";
-
-    @Inject
-    public Socket socket;
+    private static final String EVENT_LIGHT = "light";
 
     private PlayerListener playerListener;
-
-    public PlayerManager() {
-        App.getComponent().inject(this);
-        subscribeOnEvents();
-    }
 
     public void setPlayerListener(PlayerListener playerListener) {
         this.playerListener = playerListener;
     }
 
-    private void subscribeOnEvents() {
+    @Override
+    void subscribeOnEvents() {
         socket.on(EVENT_PLAY, args -> {
             if (playerListener != null) {
                 playerListener.onPlay(JsonUtil.parseOnPlay(args[0]));
@@ -47,22 +41,27 @@ public class PlayerManager {
                 playerListener.onRewind(JsonUtil.parseRewind(args[0]));
             }
         });
+        socket.on(EVENT_LIGHT, args -> {
+            if (playerListener != null) {
+                playerListener.onLightToggle(JsonUtil.parseToggleLight(args[0]));
+            }
+        });
     }
 
     public void play() {
-        printEmit("PLAY");
+        printEmit(EVENT_PLAY);
         socket.emit(EVENT_PLAY, new Object(), (Ack) args -> {
             System.out.println("EMIT: PLAY CONFIRMED");
         });
     }
 
     public void pause() {
-        printEmit("PAUSE");
+        printEmit(EVENT_PAUSE);
         socket.emit(EVENT_PAUSE, new Object());
     }
 
     public void rewind(int secondsFromStart) {
-        printEmit("REWIND");
+        printEmit(EVENT_REWIND);
         HashMap<String, String> map = new HashMap<>();
         map.put("second", String.valueOf(secondsFromStart));
         socket.emit(EVENT_REWIND, new JSONObject(map));
@@ -72,12 +71,13 @@ public class PlayerManager {
      * Asks server for current video and time
      */
     public void videoTime() {
-        printEmit("VIDEO TIME");
+        printEmit(EVENT_VIDEO_TIME);
         socket.emit(EVENT_VIDEO_TIME, new Object());
     }
 
-    public void printEmit(String eventName) {
-        System.out.println("EMIT " + eventName);
+    public void toggleLight() {
+        printEmit(EVENT_LIGHT);
+        socket.emit(EVENT_LIGHT, new Object());
     }
 
     public interface PlayerListener {
@@ -87,6 +87,8 @@ public class PlayerManager {
         void onPause();
 
         void onRewind(int rewindTo);
+
+        void onLightToggle(boolean isWhite);
     }
 
 }

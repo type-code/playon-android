@@ -13,6 +13,7 @@ public class PlayerViewModel extends AndroidViewModel {
     private MutableLiveData<Boolean> mShouldPlay;
     private MutableLiveData<String> mVideoLink;
     private MutableLiveData<Integer> mVideoTime;
+    private MutableLiveData<Boolean> mIsLightWhite;
     private ConnectionManager mConnectionManager;
     private PlayerManager mPlayerManager;
     private Handler mHandler;
@@ -20,12 +21,12 @@ public class PlayerViewModel extends AndroidViewModel {
     public PlayerViewModel(Application application) {
         super(application);
         // TODO: di
-        mHandler = new Handler(Looper.getMainLooper());
         mPlayerManager = new PlayerManager();
-//        videoData = new MutableLiveData<>();
+        mHandler = new Handler(Looper.getMainLooper());
         mShouldPlay = new MutableLiveData<>();
         mVideoLink = new MutableLiveData<>();
         mVideoTime = new MutableLiveData<>();
+        mIsLightWhite = new MutableLiveData<>();
 
         mConnectionManager = new ConnectionManager();
         mConnectionManager.setConnectionListener(new ConnectionManager.ConnectionListener() {
@@ -36,6 +37,7 @@ public class PlayerViewModel extends AndroidViewModel {
                     mVideoTime.setValue(connectionData.getTimeInMilli());
                     mVideoLink.setValue(connectionData.getVideo());
                     mShouldPlay.setValue(connectionData.isPlaying());
+                    mIsLightWhite.setValue(connectionData.isWhiteLight());
                 });
 
                 mConnectionManager.join("GEORGE");
@@ -69,6 +71,13 @@ public class PlayerViewModel extends AndroidViewModel {
                     mVideoTime.setValue(rewindTo * 1000);
                 });
             }
+
+            @Override
+            public void onLightToggle(boolean isWhite) {
+                mHandler.post(() -> {
+                    mIsLightWhite.setValue(isWhite);
+                });
+            }
         });
     }
 
@@ -82,6 +91,10 @@ public class PlayerViewModel extends AndroidViewModel {
 
     public MutableLiveData<Boolean> getShouldPlay() {
         return mShouldPlay;
+    }
+
+    public MutableLiveData<Boolean> getIsLightWhite() {
+        return mIsLightWhite;
     }
 
     public void rewindTo(int milliSecondsFromStart) {

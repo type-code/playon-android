@@ -21,32 +21,68 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <Button
-            android:id="@+id/btnPlay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/youtubeContainer"
-            android:onClick="@{() -> playerViewModel.play()}"
-            android:text="Play" />
-
-        <Button
-            android:id="@+id/btnPause"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/youtubeContainer"
-            android:onClick="@{() -> playerViewModel.pause()}"
-            android:text="Pause" />
-
-        <SeekBar
-            android:id="@+id/pbVideoProgress"
-            style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+        <RelativeLayout
+            android:id="@+id/containerControls"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/btnPlay" />
+            android:layout_below="@+id/youtubeContainer">
+
+            <Button
+                android:id="@+id/btnPlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:onClick="@{() -> playerViewModel.play()}"
+                android:text="Play" />
+
+            <Button
+                android:id="@+id/btnPause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:onClick="@{() -> playerViewModel.pause()}"
+                android:text="Pause" />
+
+            <SeekBar
+                android:id="@+id/pbVideoProgress"
+                style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/btnPlay" />
+        </RelativeLayout>
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvChat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/containerSendMessage"
+            android:layout_below="@+id/containerControls" />
+
+        <LinearLayout
+            android:id="@+id/containerSendMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <EditText
+                android:id="@+id/etMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.2"
+                android:hint="Enter message" />
+
+            <Button
+                android:id="@+id/btnSend"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.8"
+                android:text="Send" />
+        </LinearLayout>
 
     </RelativeLayout>
 </layout>

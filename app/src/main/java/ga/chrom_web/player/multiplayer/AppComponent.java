@@ -10,4 +10,8 @@ public interface AppComponent {
     void inject(PlayerManager playerManager);
 
     void inject(ConnectionManager connectionManager);
+
+    void inject(ChatManager chatManager);
+
+    void inject(Manager manager);
 }

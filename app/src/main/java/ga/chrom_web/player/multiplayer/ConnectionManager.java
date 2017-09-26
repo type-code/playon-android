@@ -4,25 +4,19 @@ package ga.chrom_web.player.multiplayer;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+
 import javax.inject.Inject;
 
 import io.socket.client.Ack;
 import io.socket.client.Socket;
 
-public class ConnectionManager {
+public class ConnectionManager extends Manager {
 
     private static final String EVENT_CONNECTED = "connected";
     private static final String EVENT_JOIN = "join";
 
-    @Inject
-    public Socket socket;
-
     private ConnectionListener connectionListener;
-
-    public ConnectionManager() {
-        App.getComponent().inject(this);
-        subscribeOnEvents();
-    }
 
     public void connect() {
         socket.connect();
@@ -32,22 +26,19 @@ public class ConnectionManager {
         this.connectionListener = connectionListener;
     }
 
-    private void subscribeOnEvents() {
+    @Override
+    void subscribeOnEvents() {
         socket.on(EVENT_CONNECTED, args -> {
             if (connectionListener != null) {
-                connectionListener.connected(JsonUtil.parseConnectionData(args[0]));
+                connectionListener.connected(JsonUtil.jsonToObject(args[0], ConnectionData.class));
             }
         });
     }
 
     public void join(String nick) {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("nick", nick);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        socket.emit(EVENT_JOIN, jsonObject, (Ack) args -> {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("nick", nick);
+        socket.emit(EVENT_JOIN, new JSONObject(map), (Ack) args -> {
             if (connectionListener != null) {
                 connectionListener.joined();
             }
