@@ -1,4 +1,4 @@
-package ga.chrom_web.player.multiplayer;
+package ga.chrom_web.player.multiplayer.data;
 
 
 import com.google.gson.annotations.SerializedName;

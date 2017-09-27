@@ -1,4 +1,4 @@
-package ga.chrom_web.player.multiplayer.view;
+package ga.chrom_web.player.multiplayer.ui.player;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
@@ -7,10 +7,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SeekBar;
+import android.widget.PopupWindow;
 
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
@@ -20,19 +22,18 @@ import ga.chrom_web.player.multiplayer.BuildConfig;
 import ga.chrom_web.player.multiplayer.PlayerViewModel;
 import ga.chrom_web.player.multiplayer.R;
 import ga.chrom_web.player.multiplayer.databinding.FragmentPlayerBinding;
-import ga.chrom_web.player.multiplayer.view.adapter.ChatAdapter;
 
 
 public class PlayerFragment extends Fragment implements YouTubePlayer.OnInitializedListener {
 
-//    private ConnectionData videoData;
     private YouTubePlayer mPlayer;
     private PlayerViewModel mViewModel;
-    private YouTubePlayerSupportFragment mYouTubeFragment;
     private FragmentPlayerBinding mBinding;
     private ChatAdapter mChatAdapter;
+    private LinearLayoutManager mLayoutManager;
     private Handler mHandler;
     private boolean mIsProgressActive;
+    private boolean mIsControlsShown;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -40,18 +41,80 @@ public class PlayerFragment extends Fragment implements YouTubePlayer.OnInitiali
         // Inflate the layout for this fragment
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_player, container, false);
 
-        mYouTubeFragment = new YouTubePlayerSupportFragment();
-        getFragmentManager().beginTransaction().replace(R.id.youtubeContainer, mYouTubeFragment).commit();
-        mYouTubeFragment.initialize(BuildConfig.YouTubeApiKey, this);
+        YouTubePlayerSupportFragment youTubeFragment = new YouTubePlayerSupportFragment();
+        getFragmentManager().beginTransaction().replace(R.id.youtubeContainer, youTubeFragment).commit();
+        youTubeFragment.initialize(BuildConfig.YouTubeApiKey, this);
 
         mHandler = new Handler(Looper.getMainLooper());
-
         mChatAdapter = new ChatAdapter();
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        mBinding.rvChat.setLayoutManager(layoutManager);
-        mBinding.rvChat.setAdapter(mChatAdapter);
 
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        mBinding.rvChat.setLayoutManager(mLayoutManager);
+        mBinding.rvChat.setHasFixedSize(true);
+        mBinding.rvChat.setAdapter(mChatAdapter);
+        mLayoutManager.setStackFromEnd(true);
+
+        mIsControlsShown = true;
+
+        mHandler.postDelayed(() -> {
+            initControls(youTubeFragment.getView().getWidth(), youTubeFragment.getView().getHeight());
+
+        }, 1000);
         return mBinding.getRoot();
+    }
+
+    View controlsLayout;
+
+
+    public void initControls(int width, int height) {
+        int[] leftTopViewPosition = new int[2];
+        mBinding.mainContainer.getLocationOnScreen(leftTopViewPosition);
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        controlsLayout = inflater.inflate(R.layout.youtube_player_controls, null);
+        PopupWindow pw = new PopupWindow(controlsLayout, width, height);
+        pw.showAtLocation(mBinding.mainContainer, Gravity.TOP, 0, leftTopViewPosition[1]);
+
+        controlsLayout.findViewById(R.id.imgPlay).setOnClickListener(view -> {
+            mViewModel.play();
+        });
+        controlsLayout.findViewById(R.id.imgPause).setOnClickListener(view -> {
+            mViewModel.pause();
+        });
+        controlsLayout.findViewById(R.id.imgUpload).setOnClickListener(view -> {
+
+        });
+        controlsLayout.findViewById(R.id.imgFullscreen).setOnClickListener(view -> {
+
+        });
+        controlsLayout.setOnClickListener(view -> {
+            if (mIsControlsShown) {
+                hidePlayerControls();
+            } else {
+                showPlayerControls();
+            }
+            mIsControlsShown = !mIsControlsShown;
+        });
+    }
+
+    private void hidePlayerControls() {
+        controlsLayout.animate().alpha(0f).setDuration(300)
+                .withEndAction(() -> {
+                    setControlsClickable(false);
+                });
+    }
+
+    private void showPlayerControls() {
+        controlsLayout.animate().alpha(1f).setDuration(300)
+                .withStartAction(() -> {
+                    setControlsClickable(true);
+                });
+    }
+
+    private void setControlsClickable(boolean clickable) {
+        controlsLayout.findViewById(R.id.imgPlay).setClickable(clickable);
+        controlsLayout.findViewById(R.id.imgPause).setClickable(clickable);
+        controlsLayout.findViewById(R.id.imgUpload).setClickable(clickable);
+        controlsLayout.findViewById(R.id.imgFullscreen).setClickable(clickable);
     }
 
     @Override
@@ -68,12 +131,18 @@ public class PlayerFragment extends Fragment implements YouTubePlayer.OnInitiali
         mViewModel.getShouldPlay().observe(this, shouldPlay -> {
             playOrPause(shouldPlay);
         });
+        mViewModel.getMessages().observe(this, message -> {
+            mChatAdapter.addItem(message);
+            // after adding item scroll to the very bottom
+            mHandler.post(() -> {
+                mBinding.rvChat.smoothScrollToPosition(mChatAdapter.getItemCount() - 1);
+            });
+        });
         mBinding.setPlayerViewModel(mViewModel);
     }
 
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player, boolean wasRestored) {
-        System.out.println("player init");
         mPlayer = player;
         mPlayer.setPlayerStyle(YouTubePlayer.PlayerStyle.CHROMELESS);
         mViewModel.playerInitialized();
@@ -84,7 +153,6 @@ public class PlayerFragment extends Fragment implements YouTubePlayer.OnInitiali
 
             @Override
             public void onLoaded(String s) {
-                System.out.println("VIDEO LOADED " + s);
                 updateProgressBarEachSecond();
             }
 
@@ -94,6 +162,7 @@ public class PlayerFragment extends Fragment implements YouTubePlayer.OnInitiali
 
             @Override
             public void onVideoStarted() {
+
             }
 
             @Override
@@ -102,29 +171,14 @@ public class PlayerFragment extends Fragment implements YouTubePlayer.OnInitiali
 
             @Override
             public void onError(YouTubePlayer.ErrorReason errorReason) {
+                Log.d("Logs", errorReason.toString());
             }
         });
     }
 
     private void updateProgressBarEachSecond() {
 
-        mBinding.pbVideoProgress.setMax(mPlayer.getDurationMillis());
-        mBinding.pbVideoProgress.setIndeterminate(false);
-        mBinding.pbVideoProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                System.out.println(seekBar.getProgress() + " " + seekBar.getMax());
-                mViewModel.rewindTo(seekBar.getProgress());
-            }
-        });
+        mBinding.setDuration(mPlayer.getDurationMillis());
         if (mIsProgressActive) {
             return;
         }
@@ -132,12 +186,11 @@ public class PlayerFragment extends Fragment implements YouTubePlayer.OnInitiali
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                mBinding.pbVideoProgress.setProgress(mPlayer.getCurrentTimeMillis());
+                mBinding.setCurrentTime(mPlayer.getCurrentTimeMillis());
                 mHandler.postDelayed(this, 1000);
             }
         });
     }
-
 
     private void playOrPause(boolean shouldPlay) {
         if (shouldPlay) {

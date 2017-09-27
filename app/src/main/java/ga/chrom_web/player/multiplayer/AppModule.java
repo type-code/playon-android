@@ -25,4 +25,19 @@ public class AppModule {
     public PlayerManager providesPlayerManager() {
         return new PlayerManager();
     }
+
+    @Provides
+    public ConnectionManager providesConnectionManager() {
+        return new ConnectionManager();
+    }
+
+    @Provides
+    public ChatManager providesChatManager() {
+        return new ChatManager();
+    }
+
+    @Provides
+    public SharedPreferenceHelper providesSharedPreferenceHelper() {
+        return new SharedPreferenceHelper();
+    }
 }

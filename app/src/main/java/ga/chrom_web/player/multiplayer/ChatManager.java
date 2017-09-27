@@ -5,9 +5,10 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
+import ga.chrom_web.player.multiplayer.data.ChatMessage;
+
 public class ChatManager extends Manager {
 
-    private static final String EVENT_MESSAGE = "message";
 
     private ChatListener chatListener;
 

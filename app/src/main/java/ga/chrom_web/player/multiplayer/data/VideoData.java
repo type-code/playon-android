@@ -1,4 +1,4 @@
-package ga.chrom_web.player.multiplayer;
+package ga.chrom_web.player.multiplayer.data;
 
 
 public class VideoData {
@@ -23,8 +23,8 @@ public class VideoData {
         this.video = video;
     }
 
-    public double getTime() {
-        return time;
+    public int getTime() {
+        return (int) time;
     }
 
     public void setTime(double time) {

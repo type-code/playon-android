@@ -1,20 +1,13 @@
-package ga.chrom_web.player.multiplayer;
+package ga.chrom_web.player.multiplayer.data;
 
 
-public class ChatMessage {
-    private String nick;
+import android.graphics.Color;
+
+public class ChatMessage extends ChatItem {
     private String text;
     private String color;
 
     public ChatMessage() {
-    }
-
-    public String getNick() {
-        return nick;
-    }
-
-    public void setNick(String nick) {
-        this.nick = nick;
     }
 
     public String getText() {
@@ -25,11 +18,15 @@ public class ChatMessage {
         this.text = text;
     }
 
-    public String getColor() {
-        return color;
+    public int getColor() {
+        return Color.parseColor(color);
     }
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public String getFullMessage() {
+        return nick + ": " + text;
     }
 }

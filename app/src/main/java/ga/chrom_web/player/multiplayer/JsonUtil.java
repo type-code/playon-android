@@ -6,6 +6,9 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import ga.chrom_web.player.multiplayer.data.ConnectionData;
+import ga.chrom_web.player.multiplayer.data.VideoData;
+
 public class JsonUtil {
 
 
@@ -21,12 +24,6 @@ public class JsonUtil {
             e.printStackTrace();
         }
         return null;
-    }
-
-    public static ConnectionData parseConnectionData(Object connectionDataObj) {
-        String data = connectionDataObj.toString();
-        Gson gson = new Gson();
-        return gson.fromJson(data, ConnectionData.class);
     }
 
     public static <T> T jsonToObject(Object jsonObj, Class<T> type) {
@@ -54,5 +51,15 @@ public class JsonUtil {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public static String parseJoined(Object arg) {
+        JSONObject jsonObject = ((JSONObject) arg);
+        try {
+            return jsonObject.getString("nick");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

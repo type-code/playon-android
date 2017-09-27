@@ -1,4 +1,4 @@
-package ga.chrom_web.player.multiplayer.view
+package ga.chrom_web.player.multiplayer.ui.player
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity

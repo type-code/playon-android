@@ -1,56 +1,81 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="ga.chrom_web.player.multiplayer.view.PlayerFragment">
+    tools:context="ga.chrom_web.player.multiplayer.ui.player.PlayerFragment">
 
     <data>
 
         <import type="android.view.View" />
 
+        <import type="ga.chrom_web.player.multiplayer.Utils" />
+
         <variable
             name="playerViewModel"
             type="ga.chrom_web.player.multiplayer.PlayerViewModel" />
+
+        <variable
+            name="duration"
+            type="int" />
+
+        <variable
+            name="currentTime"
+            type="int" />
+
     </data>
 
     <RelativeLayout
+        android:id="@+id/mainContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <FrameLayout
-            android:id="@+id/youtubeContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/youtubeWrapper"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <FrameLayout
+                android:id="@+id/youtubeContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </android.support.constraint.ConstraintLayout>
 
         <RelativeLayout
             android:id="@+id/containerControls"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/youtubeContainer">
+            android:layout_below="@+id/youtubeWrapper">
 
-            <Button
-                android:id="@+id/btnPlay"
+            <TextView
+                android:id="@+id/tvCurrentTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:onClick="@{() -> playerViewModel.play()}"
-                android:text="Play" />
-
-            <Button
-                android:id="@+id/btnPause"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:onClick="@{() -> playerViewModel.pause()}"
-                android:text="Pause" />
+                android:text="@{Utils.formattedTime(currentTime) ?? @string/default_time}" />
 
             <SeekBar
                 android:id="@+id/pbVideoProgress"
                 style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/btnPlay" />
+                android:layout_toEndOf="@+id/tvCurrentTime"
+                android:layout_toLeftOf="@+id/tvDuration"
+                android:layout_toRightOf="@+id/tvCurrentTime"
+                android:layout_toStartOf="@+id/tvDuration"
+                android:indeterminate="false"
+                android:max="@{duration}"
+                android:onStopTrackingTouch="@{() -> playerViewModel.rewindTo(pbVideoProgress.getProgress())}"
+                android:progress="@{currentTime}" />
+
+            <TextView
+                android:id="@+id/tvDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:text="@{Utils.formattedTime(duration) ?? @string/default_time}" />
+
         </RelativeLayout>
 
 
@@ -66,6 +91,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:background="#dcd8d8"
             android:orientation="horizontal"
             android:weightSum="1">
 
@@ -74,13 +100,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.2"
-                android:hint="Enter message" />
+                android:hint="Enter message"
+                android:maxLines="2" />
 
             <Button
                 android:id="@+id/btnSend"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
                 android:layout_weight="0.8"
+                android:onClick="@{() -> playerViewModel.send(etMessage.getText().toString())}"
                 android:text="Send" />
         </LinearLayout>
 
