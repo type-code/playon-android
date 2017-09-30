@@ -16,11 +16,16 @@
             android:id="@+id/tvText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            android:padding="8dp"
             android:gravity="center"
-            android:background="@{notification.getColor()}"
+            android:background="@drawable/notification_rounded_corners"
+            android:padding="8dp"
+            android:layout_margin="4dp"
             android:text="@{notification.getFullNotification(context)}"
             android:textColor="@android:color/white" />
     </LinearLayout>
+    <!--android:padding="8dp"-->
+    <!--android:layout_margin="8dp"-->
+    <!--android:background="@{notification.getColor()}"-->
+
+
 </layout>

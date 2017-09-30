@@ -8,7 +8,7 @@ repositories {
 }
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    buildToolsVersion "26.0.2"
     defaultConfig {
         applicationId "ga.chrom_web.player.multiplayer"
         minSdkVersion 16

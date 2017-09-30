@@ -3,6 +3,8 @@ package ga.chrom_web.player.multiplayer.ui.player;
 
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -28,7 +30,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.DataBindingVie
 
     @Override
     public DataBindingViewHolder<ViewDataBinding> onCreateViewHolder(ViewGroup parent, int viewType) {
-        int layoutId = -1;
+        int layoutId;
         if (viewType == TYPE_MESSAGE) {
             layoutId = R.layout.list_chat_message;
         } else if (viewType == TYPE_NOTIFICATION) {
@@ -49,6 +51,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.DataBindingVie
         } else if (holder.binding instanceof ListChatNotificationBinding) {
             ListChatNotificationBinding binding = (ListChatNotificationBinding) holder.binding;
             binding.setNotification((ChatNotification) items.get(position));
+            // we need both rounded corners and custom background color
+            // rounded corners are set as background in XML
+            GradientDrawable sd = (GradientDrawable) binding.tvText.getBackground();
+            sd.setColor(((ChatNotification) items.get(position)).getColor());
         }
     }
 

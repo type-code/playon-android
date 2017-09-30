@@ -26,13 +26,13 @@ public class ChatNotification extends ChatItem {
     }
 
     public ChatNotification(String nick, String event) {
-        this.nick = nick;
+        this.setNick(nick);
         this.event = event;
     }
 
     public ChatNotification(String nick, String event, @Nullable String additionalInfo) {
         this.event = event;
-        this.nick = nick;
+        this.setNick(nick);
         this.additionalInfo = additionalInfo;
     }
 
@@ -44,19 +44,19 @@ public class ChatNotification extends ChatItem {
         // TODO: think about it
         switch (event) {
             case Manager.EVENT_JOIN:
-                return nick + " " + context.getString(R.string.chat_notification_joined);
+                return getNick() + " " + context.getString(R.string.chat_notification_joined);
             case Manager.EVENT_LOAD:
-                return nick + " " + context.getString(R.string.chat_notification_load);
+                return getNick() + " " + context.getString(R.string.chat_notification_load);
             case Manager.EVENT_PAUSE:
-                return nick + " " + context.getString(R.string.chat_notification_pause);
+                return getNick() + " " + context.getString(R.string.chat_notification_pause);
             case Manager.EVENT_PLAY:
-                return nick + " " + context.getString(R.string.chat_notification_play);
+                return getNick() + " " + context.getString(R.string.chat_notification_play);
             case Manager.EVENT_REWIND:
-                return nick + " " + context.getString(R.string.chat_notification_rewind) + " " + additionalInfo;
+                return getNick() + " " + context.getString(R.string.chat_notification_rewind) + " " + additionalInfo;
             case Manager.EVENT_DISCONNECT:
-                return nick + " " + context.getString(R.string.chat_notification_disconnect);
+                return getNick() + " " + context.getString(R.string.chat_notification_disconnect);
             default:
-                return nick + " " + event;
+                return getNick() + " " + event;
         }
     }
 

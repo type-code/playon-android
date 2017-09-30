@@ -8,7 +8,7 @@ import io.socket.client.Socket;
 public abstract class Manager {
 
     public static final String EVENT_CONNECTED = "connected";
-    public static final String EVENT_DISCONNECT = "disconnect";
+    public static final String EVENT_DISCONNECT = "disc";
     public static final String EVENT_JOIN = "join";
 
 

@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
+import android.widget.SeekBar;
 
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
@@ -21,11 +22,14 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 import ga.chrom_web.player.multiplayer.BuildConfig;
 import ga.chrom_web.player.multiplayer.PlayerViewModel;
 import ga.chrom_web.player.multiplayer.R;
+import ga.chrom_web.player.multiplayer.Utils;
 import ga.chrom_web.player.multiplayer.databinding.FragmentPlayerBinding;
+import ga.chrom_web.player.multiplayer.databinding.YoutubePlayerControlsBinding;
 
 
 public class PlayerFragment extends Fragment implements YouTubePlayer.OnInitializedListener {
 
+    private YoutubePlayerControlsBinding mPopupBinding;
     private YouTubePlayer mPlayer;
     private PlayerViewModel mViewModel;
     private FragmentPlayerBinding mBinding;
@@ -63,30 +67,45 @@ public class PlayerFragment extends Fragment implements YouTubePlayer.OnInitiali
         return mBinding.getRoot();
     }
 
-    View controlsLayout;
 
 
     public void initControls(int width, int height) {
         int[] leftTopViewPosition = new int[2];
         mBinding.mainContainer.getLocationOnScreen(leftTopViewPosition);
         LayoutInflater inflater = LayoutInflater.from(getActivity());
-        controlsLayout = inflater.inflate(R.layout.youtube_player_controls, null);
-        PopupWindow pw = new PopupWindow(controlsLayout, width, height);
+
+        mPopupBinding = DataBindingUtil
+                .inflate(inflater, R.layout.youtube_player_controls, null, false);
+        mPopupBinding.setViewModel(mViewModel);
+
+        PopupWindow pw = new PopupWindow(mPopupBinding.getRoot(), width, height);
         pw.showAtLocation(mBinding.mainContainer, Gravity.TOP, 0, leftTopViewPosition[1]);
 
-        controlsLayout.findViewById(R.id.imgPlay).setOnClickListener(view -> {
-            mViewModel.play();
+
+        ((SeekBar) mPopupBinding.getRoot().findViewById(R.id.videoProgress))
+                .setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                updateProgress(seekBar);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                updateProgress(seekBar);
+            }
         });
-        controlsLayout.findViewById(R.id.imgPause).setOnClickListener(view -> {
-            mViewModel.pause();
-        });
-        controlsLayout.findViewById(R.id.imgUpload).setOnClickListener(view -> {
+
+        mPopupBinding.getRoot().findViewById(R.id.imgUpload).setOnClickListener(view -> {
 
         });
-        controlsLayout.findViewById(R.id.imgFullscreen).setOnClickListener(view -> {
+        mPopupBinding.getRoot().findViewById(R.id.imgFullscreen).setOnClickListener(view -> {
 
         });
-        controlsLayout.setOnClickListener(view -> {
+        mPopupBinding.getRoot().setOnClickListener(view -> {
             if (mIsControlsShown) {
                 hidePlayerControls();
             } else {
@@ -96,25 +115,48 @@ public class PlayerFragment extends Fragment implements YouTubePlayer.OnInitiali
         });
     }
 
+    private void updateProgress(SeekBar seekBar) {
+        int width = seekBar.getWidth()
+                - seekBar.getPaddingLeft()
+                - seekBar.getPaddingRight();
+        int thumbPos = seekBar.getPaddingLeft()
+                + width
+                * seekBar.getProgress()
+                / seekBar.getMax();
+        int currentProgressStart = thumbPos - mPopupBinding.tvVideoTimeCurrent.getWidth();
+        int durationEnd = thumbPos + mPopupBinding.tvVideoDuration.getWidth();
+        if (currentProgressStart > 0) {
+            if (durationEnd < Utils.getScreenWidth()) {
+                mPopupBinding.tvVideoTimeCurrent.setX(currentProgressStart);
+                mPopupBinding.tvVideoDuration.setX(thumbPos);
+            }  else {
+                mPopupBinding.tvVideoDuration.setX(Utils.getScreenWidth() - mPopupBinding.tvVideoDuration.getWidth());
+                mPopupBinding.tvVideoTimeCurrent.setX(mPopupBinding.tvVideoDuration.getX()
+                        - mPopupBinding.tvVideoTimeCurrent.getWidth());
+            }
+        }
+    }
+
     private void hidePlayerControls() {
-        controlsLayout.animate().alpha(0f).setDuration(300)
+        mPopupBinding.getRoot().animate().alpha(0f).setDuration(300)
                 .withEndAction(() -> {
                     setControlsClickable(false);
                 });
     }
 
     private void showPlayerControls() {
-        controlsLayout.animate().alpha(1f).setDuration(300)
+        mPopupBinding.getRoot().animate().alpha(1f).setDuration(300)
                 .withStartAction(() -> {
                     setControlsClickable(true);
                 });
     }
 
     private void setControlsClickable(boolean clickable) {
-        controlsLayout.findViewById(R.id.imgPlay).setClickable(clickable);
-        controlsLayout.findViewById(R.id.imgPause).setClickable(clickable);
-        controlsLayout.findViewById(R.id.imgUpload).setClickable(clickable);
-        controlsLayout.findViewById(R.id.imgFullscreen).setClickable(clickable);
+        mPopupBinding.getRoot().findViewById(R.id.imgPlay).setClickable(clickable);
+        mPopupBinding.getRoot().findViewById(R.id.imgPause).setClickable(clickable);
+        mPopupBinding.getRoot().findViewById(R.id.imgUpload).setClickable(clickable);
+        mPopupBinding.getRoot().findViewById(R.id.imgFullscreen).setClickable(clickable);
+        // TODO: add seekbar here
     }
 
     @Override
@@ -143,6 +185,7 @@ public class PlayerFragment extends Fragment implements YouTubePlayer.OnInitiali
 
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player, boolean wasRestored) {
+        Log.d("Logs", "YOUTUBE PLAYER INIT SUCCESS");
         mPlayer = player;
         mPlayer.setPlayerStyle(YouTubePlayer.PlayerStyle.CHROMELESS);
         mViewModel.playerInitialized();
@@ -171,7 +214,7 @@ public class PlayerFragment extends Fragment implements YouTubePlayer.OnInitiali
 
             @Override
             public void onError(YouTubePlayer.ErrorReason errorReason) {
-                Log.d("Logs", errorReason.toString());
+                Log.d("Logs", "ERROR" + errorReason.toString());
             }
         });
     }
@@ -179,6 +222,7 @@ public class PlayerFragment extends Fragment implements YouTubePlayer.OnInitiali
     private void updateProgressBarEachSecond() {
 
         mBinding.setDuration(mPlayer.getDurationMillis());
+        mPopupBinding.setDuration(mPlayer.getDurationMillis());
         if (mIsProgressActive) {
             return;
         }
@@ -187,6 +231,7 @@ public class PlayerFragment extends Fragment implements YouTubePlayer.OnInitiali
             @Override
             public void run() {
                 mBinding.setCurrentTime(mPlayer.getCurrentTimeMillis());
+                mPopupBinding.setCurrentTime(mPlayer.getCurrentTimeMillis());
                 mHandler.postDelayed(this, 1000);
             }
         });
@@ -202,8 +247,8 @@ public class PlayerFragment extends Fragment implements YouTubePlayer.OnInitiali
 
     @Override
     public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult errorReason) {
-        System.out.println("error");
-        System.out.println(errorReason.toString());
+        Log.d("Logs", "error");
+        Log.d("Logs", errorReason.toString());
     }
 
 }

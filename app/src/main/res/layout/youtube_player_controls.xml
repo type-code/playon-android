@@ -1,40 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/controlsLayout"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center"
-    android:orientation="horizontal">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="ga.chrom_web.player.multiplayer.ui.player.PlayerFragment">
 
-    <ImageView
-        android:id="@+id/imgPlay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="Play"
-        android:onClick="@{() -> playerViewModel.play()}"
-        android:padding="12dp"
-        android:src="@drawable/ic_play" />
+    <data>
 
-    <ImageView
-        android:id="@+id/imgPause"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="Pause"
-        android:onClick="@{() -> playerViewModel.pause()}"
-        android:padding="12dp"
-        android:src="@drawable/ic_pause" />
+        <import type="android.view.View" />
 
-    <ImageView
-        android:id="@+id/imgUpload"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="12dp"
-        android:src="@drawable/ic_load" />
+        <variable
+            name="viewModel"
+            type="ga.chrom_web.player.multiplayer.PlayerViewModel" />
 
-    <ImageView
-        android:id="@+id/imgFullscreen"
-        android:layout_width="wrap_content"
+        <variable
+            name="duration"
+            type="int" />
+
+        <variable
+            name="currentTime"
+            type="int" />
+
+
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/controlsLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="12dp"
-        android:src="@drawable/ic_fullscreen" />
-</LinearLayout>
+        android:background="@color/youtube_controls_background">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/imgPlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="Play"
+                android:onClick="@{() -> viewModel.play()}"
+                android:padding="12dp"
+                android:src="@drawable/ic_play" />
+
+            <ImageView
+                android:id="@+id/imgPause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="Pause"
+                android:onClick="@{() -> viewModel.pause()}"
+                android:padding="12dp"
+                android:src="@drawable/ic_pause" />
+
+            <ImageView
+                android:id="@+id/imgUpload"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="12dp"
+                android:src="@drawable/ic_load" />
+
+            <ImageView
+                android:id="@+id/imgFullscreen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="12dp"
+                android:src="@drawable/ic_fullscreen" />
+        </LinearLayout>
+        <!-- TODO tint for api < 21 -->
+        <android.support.v7.widget.AppCompatSeekBar
+            android:id="@+id/videoProgress"
+            style="@android:style/Widget.Holo.Light.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:max="100"
+            android:paddingBottom="4dp"
+            android:progress="50"
+            android:progressBackgroundTint="#ffffffff"
+            android:progressTint="#ffffff"
+            android:thumb="@null" />
+
+        <TextView
+            android:id="@+id/tvVideoTimeCurrent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/videoProgress"
+            android:text="00:00  "
+            android:textColor="#ffffff" />
+
+        <TextView
+            android:id="@+id/tvVideoDuration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/videoProgress"
+            android:text="  55:37"
+            android:textColor="#ffffff" />
+
+    </RelativeLayout>
+    <!--     android:onStopTrackingTouch="@{() -> viewModel.rewindTo(videoProgress.getProgress())}"-->
+    <!--            android:progress="@{currentTime}"-->
+    <!--android:max="@{duration}"-->
+
+</layout>
+

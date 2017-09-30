@@ -84,33 +84,53 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/containerSendMessage"
-            android:layout_below="@+id/containerControls" />
+            android:layout_below="@+id/containerControls"
+            android:background="#e0e0e0" />
 
         <LinearLayout
             android:id="@+id/containerSendMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:background="#dcd8d8"
+            android:background="#ffffff"
             android:orientation="horizontal"
+            android:paddingBottom="8dp"
+            android:paddingLeft="6dp"
+            android:paddingStart="6dp"
+            android:paddingTop="8dp"
             android:weightSum="1">
+
+            <ImageButton
+                android:id="@+id/imgSmiles"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_gravity="bottom"
+                android:layout_weight="0.45"
+                android:background="#ffffff"
+                android:scaleType="fitCenter"
+                android:src="@drawable/kappa" />
 
             <EditText
                 android:id="@+id/etMessage"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.2"
-                android:hint="Enter message"
-                android:maxLines="2" />
+                android:layout_height="match_parent"
+                android:layout_weight="0.13"
+                android:background="@null"
+                android:hint="@string/enter_message_hint"
+                android:maxLines="2"
+                android:paddingLeft="8dp"
+                android:paddingStart="8dp"
+                android:textSize="15sp" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/btnSend"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:layout_weight="0.8"
+                android:layout_weight="0.42"
+                android:background="#ffffff"
                 android:onClick="@{() -> playerViewModel.send(etMessage.getText().toString())}"
-                android:text="Send" />
+                android:src="@drawable/ic_message" />
         </LinearLayout>
 
     </RelativeLayout>

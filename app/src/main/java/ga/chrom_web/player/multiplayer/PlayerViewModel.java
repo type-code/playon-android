@@ -46,7 +46,7 @@ public class PlayerViewModel extends AndroidViewModel {
 
         mConnectionManager.setConnectionListener(new ConnectionManager.ConnectionListener() {
             @Override
-            public void connected(ConnectionData connectionData) {
+            public void someoneConnected(ConnectionData connectionData) {
                 mVideoTime.postValue(connectionData.getTimeInMilli());
                 mVideoLink.postValue(connectionData.getVideo());
                 mShouldPlay.postValue(connectionData.isPlaying());
@@ -58,6 +58,11 @@ public class PlayerViewModel extends AndroidViewModel {
             @Override
             public void joined(String nick) {
                 postNotification(nick, Manager.EVENT_JOIN);
+            }
+
+            @Override
+            public void someoneDisconnected(String nick) {
+                postNotification(nick, Manager.EVENT_DISCONNECT);
             }
         });
 
@@ -136,9 +141,7 @@ public class PlayerViewModel extends AndroidViewModel {
     }
 
     public void send(String message) {
-        // FIXME: 26.09.2017
-        String colorWithoutAlpha = "#" + Integer.toHexString(prefs.getColor()).substring(2);
-        mChatManager.sendMessage(message, colorWithoutAlpha);
+        mChatManager.sendMessage(message, prefs.getHexColor());
     }
 
     public void play() {

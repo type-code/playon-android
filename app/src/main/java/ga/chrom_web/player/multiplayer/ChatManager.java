@@ -15,6 +15,7 @@ public class ChatManager extends Manager {
     @Override
     void subscribeOnEvents() {
         socket.on(EVENT_MESSAGE, args -> {
+            Utils.debugLog(String.valueOf(args[0]));
             if (chatListener != null) {
                 chatListener.onMessage(JsonUtil.jsonToObject(args[0], ChatMessage.class));
             }

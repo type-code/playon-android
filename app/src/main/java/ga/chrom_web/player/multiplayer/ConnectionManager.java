@@ -1,17 +1,21 @@
 package ga.chrom_web.player.multiplayer;
 
 
+import android.util.Log;
+
 import org.json.JSONObject;
 
 import java.util.HashMap;
 
 import ga.chrom_web.player.multiplayer.data.ConnectionData;
+import io.socket.client.Socket;
 
 public class ConnectionManager extends Manager {
 
     private ConnectionListener connectionListener;
 
     public void connect() {
+        Utils.debugLog("Trying to connect...");
         socket.connect();
     }
 
@@ -22,14 +26,22 @@ public class ConnectionManager extends Manager {
     @Override
     void subscribeOnEvents() {
         socket.on(EVENT_CONNECTED, args -> {
+            Utils.debugLog("Connected");
             if (connectionListener != null) {
-                connectionListener.connected(JsonUtil.jsonToObject(args[0], ConnectionData.class));
+                connectionListener.someoneConnected(JsonUtil.jsonToObject(args[0], ConnectionData.class));
             }
         });
         socket.on(EVENT_JOIN, args -> {
-                if (connectionListener != null) {
-                    connectionListener.joined(JsonUtil.parseJoined(args[0]));
-                }
+            Utils.debugLog("Someone joined maybe it's me: " + args[0]);
+            if (connectionListener != null) {
+                connectionListener.joined(JsonUtil.parseNick(args[0]));
+            }
+        });
+        socket.on(EVENT_DISCONNECT, args -> {
+            Utils.debugLog("Someone disconnect: " + args[0]);
+            if (connectionListener != null) {
+                connectionListener.someoneDisconnected(JsonUtil.parseNick(args[0]));
+            }
         });
     }
 
@@ -40,8 +52,10 @@ public class ConnectionManager extends Manager {
     }
 
     public interface ConnectionListener {
-        void connected(ConnectionData connectionData);
+        void someoneConnected(ConnectionData connectionData);
 
         void joined(String nick);
+
+        void someoneDisconnected(String nick);
     }
 }
