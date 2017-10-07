@@ -25,11 +25,6 @@ public class ChatNotification extends ChatItem {
     public ChatNotification() {
     }
 
-    public ChatNotification(String nick, String event) {
-        this.setNick(nick);
-        this.event = event;
-    }
-
     public ChatNotification(String nick, String event, @Nullable String additionalInfo) {
         this.event = event;
         this.setNick(nick);

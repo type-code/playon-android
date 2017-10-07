@@ -3,7 +3,7 @@ package ga.chrom_web.player.multiplayer.data;
 
 import com.google.gson.annotations.SerializedName;
 
-public class ConnectionData {
+public class PlayerData {
     private String video;
     private double time;
     @SerializedName("play")
@@ -11,7 +11,7 @@ public class ConnectionData {
     @SerializedName("light")
     private boolean isLight;
 
-    public ConnectionData() {
+    public PlayerData() {
     }
 
     public String getVideo() {

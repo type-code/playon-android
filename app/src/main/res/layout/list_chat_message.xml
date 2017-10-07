@@ -3,9 +3,12 @@
 
     <data>
 
+        <import type="android.text.Html" />
+
         <variable
             name="message"
             type="ga.chrom_web.player.multiplayer.data.ChatMessage" />
+
     </data>
 
     <LinearLayout
@@ -27,6 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:text="@{message.getFullMessage()}" />
+            android:textColor="@color/chat_message_color"
+            android:text="@{Html.fromHtml(message.getFullMessage())}" />
     </LinearLayout>
 </layout>

@@ -6,9 +6,6 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import ga.chrom_web.player.multiplayer.data.ConnectionData;
-import ga.chrom_web.player.multiplayer.data.VideoData;
-
 public class JsonUtil {
 
     public static <T> T jsonToObject(Object jsonObj, Class<T> type) {

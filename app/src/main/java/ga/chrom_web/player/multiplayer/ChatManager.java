@@ -13,8 +13,8 @@ public class ChatManager extends Manager {
     private ChatListener chatListener;
 
     @Override
-    void subscribeOnEvents() {
-        socket.on(EVENT_MESSAGE, args -> {
+    protected void subscribeOnEvents() {
+        getSocket().on(EVENT_MESSAGE, args -> {
             Utils.debugLog(String.valueOf(args[0]));
             if (chatListener != null) {
                 chatListener.onMessage(JsonUtil.jsonToObject(args[0], ChatMessage.class));
@@ -30,7 +30,7 @@ public class ChatManager extends Manager {
         HashMap<String, String> map = new HashMap<>();
         map.put("text", text);
         map.put("color", hexColor);
-        socket.emit(EVENT_MESSAGE, new JSONObject(map));
+        getSocket().emit(EVENT_MESSAGE, new JSONObject(map));
     }
 
     public interface ChatListener {

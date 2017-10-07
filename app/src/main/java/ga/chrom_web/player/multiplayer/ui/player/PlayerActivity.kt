@@ -7,11 +7,17 @@ import ga.chrom_web.player.multiplayer.R
 class PlayerActivity : AppCompatActivity() {
 
 
+    private lateinit var playerFragment: PlayerFragment
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
-        supportFragmentManager.beginTransaction()
-                .replace(R.id.container, PlayerFragment())
-                .commit()
+        if (savedInstanceState == null) {
+            playerFragment = PlayerFragment()
+            supportFragmentManager.beginTransaction()
+                    .replace(R.id.container, playerFragment)
+                    .commit()
+        }
+
     }
 }

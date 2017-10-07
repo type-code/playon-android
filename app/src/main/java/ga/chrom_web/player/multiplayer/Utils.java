@@ -1,6 +1,7 @@
 package ga.chrom_web.player.multiplayer;
 
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.util.Log;
 
@@ -13,11 +14,11 @@ public class Utils {
         }
     }
 
-    public static String formattedTime(int milliseconds) {
-        return getFormattedTime(milliseconds / 1000);
+    public static String formatTimeMilliseconds(int milliseconds) {
+        return formatTimeSeconds(milliseconds / 1000);
     }
 
-    public static String getFormattedTime(int seconds) {
+    public static String formatTimeSeconds(int seconds) {
         StringBuilder sb = new StringBuilder();
         if (seconds > 3600) {
             int hours = seconds / 3600;
@@ -45,5 +46,14 @@ public class Utils {
 
     public static int getScreenHeight() {
         return Resources.getSystem().getDisplayMetrics().heightPixels;
+    }
+
+    public static int getStatusBarHeight(Context context) {
+        int result = 0;
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = context.getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
     }
 }

@@ -21,21 +21,25 @@ public class AppModule {
         return IO.socket(URI.create(HOST));
     }
 
+    @Singleton
     @Provides
     public PlayerManager providesPlayerManager() {
         return new PlayerManager();
     }
 
+    @Singleton
     @Provides
     public ConnectionManager providesConnectionManager() {
         return new ConnectionManager();
     }
 
+    @Singleton
     @Provides
     public ChatManager providesChatManager() {
         return new ChatManager();
     }
 
+    @Singleton
     @Provides
     public SharedPreferenceHelper providesSharedPreferenceHelper() {
         return new SharedPreferenceHelper();

@@ -1,13 +1,11 @@
 package ga.chrom_web.player.multiplayer;
 
 
-import android.util.Log;
-
 import org.json.JSONObject;
 
 import java.util.HashMap;
 
-import ga.chrom_web.player.multiplayer.data.ConnectionData;
+import ga.chrom_web.player.multiplayer.data.PlayerData;
 import io.socket.client.Socket;
 
 public class ConnectionManager extends Manager {
@@ -16,7 +14,15 @@ public class ConnectionManager extends Manager {
 
     public void connect() {
         Utils.debugLog("Trying to connect...");
-        socket.connect();
+        if (!socket.connected()) {
+            socket.connect();
+        } else {
+            Utils.debugLog("But already connected...");
+        }
+    }
+
+    public boolean isConnected() {
+        return socket.connected();
     }
 
     public void setConnectionListener(ConnectionListener connectionListener) {
@@ -24,11 +30,11 @@ public class ConnectionManager extends Manager {
     }
 
     @Override
-    void subscribeOnEvents() {
+    protected void subscribeOnEvents() {
         socket.on(EVENT_CONNECTED, args -> {
-            Utils.debugLog("Connected");
+            Utils.debugLog("Connected. Data: " + args[0]);
             if (connectionListener != null) {
-                connectionListener.someoneConnected(JsonUtil.jsonToObject(args[0], ConnectionData.class));
+                connectionListener.connected(JsonUtil.jsonToObject(args[0], PlayerData.class));
             }
         });
         socket.on(EVENT_JOIN, args -> {
@@ -43,16 +49,22 @@ public class ConnectionManager extends Manager {
                 connectionListener.someoneDisconnected(JsonUtil.parseNick(args[0]));
             }
         });
+        socket.on(Socket.EVENT_DISCONNECT, args -> {
+            Utils.debugLog("Disconnected!!!");
+        });
+        socket.on(Socket.EVENT_RECONNECT, args -> {
+            Utils.debugLog("Reconnect successful");
+        });
     }
 
     public void join(String nick) {
         HashMap<String, String> map = new HashMap<>();
         map.put("nick", nick);
-        socket.emit(EVENT_JOIN, new JSONObject(map));
+        getSocket().emit(EVENT_JOIN, new JSONObject(map));
     }
 
     public interface ConnectionListener {
-        void someoneConnected(ConnectionData connectionData);
+        void connected(PlayerData playerData);
 
         void joined(String nick);
 

@@ -4,4 +4,5 @@
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#FF4081</color>
     <color name="youtube_controls_background">#BF000000</color>
+    <color name="chat_message_color">#444444</color>
 </resources>
