@@ -130,11 +130,6 @@ class CustomYoutubePlayerFragment : Fragment(), YouTubePlayer.OnInitializedListe
         Utils.debugLog("PLAYER INIT ERROR " + result.toString())
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
-        super.onSaveInstanceState(outState)
-        outState?.putInt("time", mPlayer!!.currentTimeMillis)
-    }
-
     private fun initControls(parent: View, youtubePlayerWidth: Int, youtubePlayerHeight: Int) {
         val inflater = LayoutInflater.from(mContext)
         popupView = inflater.inflate(R.layout.custom_youtube_player_controls, null, false)

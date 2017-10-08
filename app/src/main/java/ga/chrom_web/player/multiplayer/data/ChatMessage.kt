@@ -2,18 +2,25 @@ package ga.chrom_web.player.multiplayer.data
 
 
 import android.graphics.Color
+import java.io.Serializable
 
-class ChatMessage : ChatItem() {
+class ChatMessage : ChatItem(), Serializable {
+
+    companion object {
+        private const val DEFAULT_COLOR = Color.BLACK
+    }
+
     private var text: String? = null
     private var color: String? = null
 
     fun getColor(): Int {
-        if (color == null) {
-            return Color.BLACK;
+        color?.let {
+            return Color.parseColor(it)
         }
-        return Color.parseColor(color)
+        return DEFAULT_COLOR;
     }
 
     fun getFullMessage():String = nick + ": " + text
 
+    override fun toString(): String = "ChatMessage(text=$text, color=$color)"
 }

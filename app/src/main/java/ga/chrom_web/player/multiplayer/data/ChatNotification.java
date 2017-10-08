@@ -6,10 +6,12 @@ import android.graphics.Color;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.io.Serializable;
+
 import ga.chrom_web.player.multiplayer.Manager;
 import ga.chrom_web.player.multiplayer.R;
 
-public class ChatNotification extends ChatItem {
+public class ChatNotification extends ChatItem implements Serializable {
 
     private static final String COLOR_JOIN = "#8e44ad";
     private static final String COLOR_LOAD = "#2980b9";
@@ -74,4 +76,11 @@ public class ChatNotification extends ChatItem {
         }
     }
 
+    @Override
+    public String toString() {
+        return "ChatNotification{" +
+                "event='" + event + '\'' +
+                ", additionalInfo='" + additionalInfo + '\'' +
+                '}';
+    }
 }

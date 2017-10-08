@@ -1,4 +1,4 @@
-package ga.chrom_web.player.multiplayer;
+package ga.chrom_web.player.multiplayer.di;
 
 import android.app.Application;
 import android.content.SharedPreferences;

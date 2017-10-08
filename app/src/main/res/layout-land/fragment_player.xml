@@ -10,7 +10,7 @@
 
         <variable
             name="playerViewModel"
-            type="ga.chrom_web.player.multiplayer.PlayerViewModel" />
+            type="ga.chrom_web.player.multiplayer.ui.player.PlayerViewModel" />
 
     </data>
 
@@ -81,7 +81,7 @@
                 android:layout_gravity="bottom"
                 android:layout_weight="0.42"
                 android:background="#ffffff"
-                android:onClick="@{() -> playerViewModel.send(etMessage.getText().toString())}"
+                android:onClick="@{() -> playerViewModel.send()}"
                 android:src="@drawable/ic_message" />
         </LinearLayout>
 

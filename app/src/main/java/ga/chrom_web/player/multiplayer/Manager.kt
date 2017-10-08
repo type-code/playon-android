@@ -1,6 +1,7 @@
 package ga.chrom_web.player.multiplayer
 
 
+import ga.chrom_web.player.multiplayer.di.App
 import javax.inject.Inject
 
 import io.socket.client.Socket

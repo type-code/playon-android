@@ -6,10 +6,8 @@ public class VideoData {
     private double time;
     private String nick;
 
-
     public VideoData() {
     }
-
 
     public int getTimeInMilli() {
         return (int)time * 1000;

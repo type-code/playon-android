@@ -1,20 +1,30 @@
-package ga.chrom_web.player.multiplayer;
+package ga.chrom_web.player.multiplayer.ui.player;
 
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.MutableLiveData;
-import android.util.Log;
+import android.databinding.ObservableField;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
+import ga.chrom_web.player.multiplayer.ChatManager;
+import ga.chrom_web.player.multiplayer.ConnectionManager;
+import ga.chrom_web.player.multiplayer.Manager;
+import ga.chrom_web.player.multiplayer.PlayerManager;
+import ga.chrom_web.player.multiplayer.SharedPreferenceHelper;
+import ga.chrom_web.player.multiplayer.Utils;
 import ga.chrom_web.player.multiplayer.data.ChatItem;
 import ga.chrom_web.player.multiplayer.data.ChatMessage;
 import ga.chrom_web.player.multiplayer.data.ChatNotification;
 import ga.chrom_web.player.multiplayer.data.PlayerData;
 import ga.chrom_web.player.multiplayer.data.VideoData;
+import ga.chrom_web.player.multiplayer.di.App;
 
 public class PlayerViewModel extends AndroidViewModel {
 
@@ -22,8 +32,9 @@ public class PlayerViewModel extends AndroidViewModel {
     private MutableLiveData<String> mVideoLink;
     private MutableLiveData<Integer> mVideoTime;
     private MutableLiveData<Boolean> mIsLightWhite;
-    private MutableLiveData<ChatItem> mMessages;
+    private MutableLiveData<ChatItem> mMessage;
     private MutableLiveData<PlayerData> mPlayerData;
+    public ObservableField<String> messageField;
     @Inject
     ConnectionManager mConnectionManager;
     @Inject
@@ -40,8 +51,9 @@ public class PlayerViewModel extends AndroidViewModel {
         mVideoLink = new MutableLiveData<>();
         mVideoTime = new MutableLiveData<>();
         mIsLightWhite = new MutableLiveData<>();
-        mMessages = new MutableLiveData<>();
+        mMessage = new MutableLiveData<>();
         mPlayerData = new MutableLiveData<>();
+        messageField = new ObservableField<>();
 
         mConnectionManager.setConnectionListener(new ConnectionManager.ConnectionListener() {
             @Override
@@ -109,12 +121,12 @@ public class PlayerViewModel extends AndroidViewModel {
         mChatManager.setChatListener(new ChatManager.ChatListener() {
             @Override
             public void onMessage(ChatMessage chatMessage) {
-                mMessages.postValue(chatMessage);
+                mMessage.postValue(chatMessage);
             }
         });
     }
 
-    public void playerInitialized() {
+    void playerInitialized() {
         if (!mConnectionManager.isConnected()) {
             mConnectionManager.connect();
         } else {
@@ -124,20 +136,22 @@ public class PlayerViewModel extends AndroidViewModel {
         }
     }
 
-    public void setCurrentTime(int currentTime) {
+    void setCurrentTime(int currentTime) {
         mPlayerData.getValue().setTime(currentTime);
     }
 
-    public void rewindTo(int milliSecondsFromStart) {
+    void rewindTo(int milliSecondsFromStart) {
         mPlayerManager.rewind(milliSecondsFromStart / 1000);
     }
 
-    public void loadVideo(String link) {
+    void loadVideo(String link) {
         mPlayerManager.loadVideo(link);
     }
 
-    public void send(String message) {
-        mChatManager.sendMessage(message, prefs.getHexColor());
+
+    public void send() {
+        mChatManager.sendMessage(messageField.get(), prefs.getHexColor());
+        messageField.set("");
     }
 
     public void play() {
@@ -148,28 +162,28 @@ public class PlayerViewModel extends AndroidViewModel {
         mPlayerManager.pause();
     }
 
-    public void postNotification(String nick, String event) {
+    private void postNotification(String nick, String event) {
         postNotification(nick, event, null);
     }
 
-    public void postNotification(String nick, String event, @Nullable String additionalInfo) {
+    private void postNotification(String nick, String event, @Nullable String additionalInfo) {
         ChatNotification notification = new ChatNotification(nick, event, additionalInfo);
-        mMessages.postValue(notification);
+        mMessage.postValue(notification);
     }
 
-    public MutableLiveData<PlayerData> getPlayerData() {
+    MutableLiveData<PlayerData> getPlayerData() {
         return mPlayerData;
     }
 
-    public MutableLiveData<String> getVideoLink() {
+    MutableLiveData<String> getVideoLink() {
         return mVideoLink;
     }
 
-    public MutableLiveData<Integer> getVideoTime() {
+    MutableLiveData<Integer> getVideoTime() {
         return mVideoTime;
     }
 
-    public MutableLiveData<Boolean> getShouldPlay() {
+    MutableLiveData<Boolean> getShouldPlay() {
         return mShouldPlay;
     }
 
@@ -177,7 +191,8 @@ public class PlayerViewModel extends AndroidViewModel {
         return mIsLightWhite;
     }
 
-    public MutableLiveData<ChatItem> getMessages() {
-        return mMessages;
+    MutableLiveData<ChatItem> getMessage() {
+        return mMessage;
     }
+
 }

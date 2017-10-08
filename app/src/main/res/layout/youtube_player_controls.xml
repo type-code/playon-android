@@ -11,7 +11,7 @@
 
         <variable
             name="viewModel"
-            type="ga.chrom_web.player.multiplayer.PlayerViewModel" />
+            type="ga.chrom_web.player.multiplayer.ui.player.PlayerViewModel" />
 
         <variable
             name="duration"

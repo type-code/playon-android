@@ -11,15 +11,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import ga.chrom_web.player.multiplayer.PlayerViewModel;
+import java.util.ArrayList;
+
 import ga.chrom_web.player.multiplayer.R;
 import ga.chrom_web.player.multiplayer.Utils;
+import ga.chrom_web.player.multiplayer.data.ChatItem;
 import ga.chrom_web.player.multiplayer.databinding.FragmentPlayerBinding;
 
 
 public class PlayerFragment extends Fragment {
 
-    private CustomYoutubePlayerFragment youtubePlayerFragment;
+    private static final String MESSAGES = "messages";
+
+    private CustomYoutubePlayerFragment mYoutubePlayerFragment;
     private PlayerViewModel mViewModel;
     private FragmentPlayerBinding mBinding;
     private ChatAdapter mChatAdapter;
@@ -29,18 +33,19 @@ public class PlayerFragment extends Fragment {
                              Bundle savedInstanceState) {
         Utils.debugLog("Starting room fragment...");
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_player, container, false);
-        // TODO: is it good or bad idea ???
-//        setRetainInstance(true);
-        if (youtubePlayerFragment == null) {
-            youtubePlayerFragment = new CustomYoutubePlayerFragment();
+
+        // TODO: is it good or bad idea setRetainInstance(true)???
+
+        if (mYoutubePlayerFragment == null) {
+            mYoutubePlayerFragment = new CustomYoutubePlayerFragment();
             getFragmentManager().beginTransaction()
-                    .replace(R.id.youtubeContainer, youtubePlayerFragment)
+                    .replace(R.id.youtubeContainer, mYoutubePlayerFragment)
                     .commit();
         }
-        youtubePlayerFragment.setYoutubePlayerListener(new CustomYoutubePlayerFragment.PlayerListener() {
+        mYoutubePlayerFragment.setYoutubePlayerListener(new CustomYoutubePlayerFragment.PlayerListener() {
             @Override
             public void onClickUpload() {
-                createEditTextDialog();
+                createUploadDialog();
             }
 
             @Override
@@ -64,6 +69,15 @@ public class PlayerFragment extends Fragment {
             }
         });
 
+        initChat();
+        if (savedInstanceState != null) {
+            ArrayList<ChatItem> messages = (ArrayList<ChatItem>) savedInstanceState.getSerializable(MESSAGES);
+            mChatAdapter.addItems(messages);
+        }
+        return mBinding.getRoot();
+    }
+
+    private void initChat() {
         mChatAdapter = new ChatAdapter();
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
@@ -71,11 +85,9 @@ public class PlayerFragment extends Fragment {
         mBinding.rvChat.setHasFixedSize(true);
         mBinding.rvChat.setAdapter(mChatAdapter);
         layoutManager.setStackFromEnd(true);
-
-        return mBinding.getRoot();
     }
 
-    private void createEditTextDialog() {
+    private void createUploadDialog() {
         final EditText edittext = new EditText(getActivity());
         edittext.setText("https://www.youtube.com/watch?v=XGmFF82PE50");
         AlertDialog.Builder adb = new AlertDialog.Builder(getActivity());
@@ -90,27 +102,25 @@ public class PlayerFragment extends Fragment {
         adb.show();
     }
 
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(this).get(PlayerViewModel.class);
 
         mViewModel.getVideoLink().observe(this, videoLink -> {
-            youtubePlayerFragment.loadVideo(videoLink);
+            mYoutubePlayerFragment.loadVideo(videoLink);
         });
         mViewModel.getVideoTime().observe(this, timeInMillis -> {
-            youtubePlayerFragment.seekToMillis(timeInMillis);
+            mYoutubePlayerFragment.seekToMillis(timeInMillis);
         });
         mViewModel.getShouldPlay().observe(this, shouldPlay -> {
             playOrPause(shouldPlay);
         });
         mViewModel.getPlayerData().observe(this, playerData -> {
-            Utils.debugLog("PLAYER DATA POSTED!!!");
-            youtubePlayerFragment.loadVideo(playerData.getVideo(),
+            mYoutubePlayerFragment.loadVideo(playerData.getVideo(),
                     playerData.getTimeInMilli(), playerData.isPlaying());
         });
-        mViewModel.getMessages().observe(this, message -> {
+        mViewModel.getMessage().observe(this, message -> {
             mChatAdapter.addItem(message);
             // after adding item scroll to the very bottom
             mBinding.rvChat.post(() -> {
@@ -120,19 +130,27 @@ public class PlayerFragment extends Fragment {
         mBinding.setPlayerViewModel(mViewModel);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // remove last item because it will be also post by LiveData
+        mChatAdapter.getItems().remove(mChatAdapter.getItems().size() - 1);
+        outState.putSerializable(MESSAGES, mChatAdapter.getItems());
+    }
+
     public void onDestroyView() {
         super.onDestroyView();
-        youtubePlayerFragment.onParentViewDestroy();
+        mYoutubePlayerFragment.onParentViewDestroy();
         // TODO: make it better
-        mViewModel.setCurrentTime(youtubePlayerFragment.getCurrentTimeMillis() / 1000);
+        mViewModel.setCurrentTime(mYoutubePlayerFragment.getCurrentTimeMillis() / 1000);
     }
 
 
     private void playOrPause(boolean shouldPlay) {
         if (shouldPlay) {
-            youtubePlayerFragment.play();
+            mYoutubePlayerFragment.play();
         } else {
-            youtubePlayerFragment.pause();
+            mYoutubePlayerFragment.pause();
         }
     }
 }

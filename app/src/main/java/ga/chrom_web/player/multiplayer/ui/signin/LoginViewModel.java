@@ -2,16 +2,13 @@ package ga.chrom_web.player.multiplayer.ui.signin;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.content.Intent;
 import android.graphics.Color;
 
 import javax.inject.Inject;
 
-import ga.chrom_web.player.multiplayer.App;
+import ga.chrom_web.player.multiplayer.di.App;
 import ga.chrom_web.player.multiplayer.SharedPreferenceHelper;
-import ga.chrom_web.player.multiplayer.ui.player.PlayerActivity;
 
 
 public class LoginViewModel extends AndroidViewModel {

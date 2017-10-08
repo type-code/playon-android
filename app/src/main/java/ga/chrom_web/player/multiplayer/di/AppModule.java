@@ -1,4 +1,4 @@
-package ga.chrom_web.player.multiplayer;
+package ga.chrom_web.player.multiplayer.di;
 
 import java.net.URI;
 
@@ -6,6 +6,10 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import ga.chrom_web.player.multiplayer.ChatManager;
+import ga.chrom_web.player.multiplayer.ConnectionManager;
+import ga.chrom_web.player.multiplayer.PlayerManager;
+import ga.chrom_web.player.multiplayer.SharedPreferenceHelper;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 

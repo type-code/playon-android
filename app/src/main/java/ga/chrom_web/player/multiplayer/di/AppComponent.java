@@ -1,8 +1,14 @@
-package ga.chrom_web.player.multiplayer;
+package ga.chrom_web.player.multiplayer.di;
 
 import javax.inject.Singleton;
 
 import dagger.Component;
+import ga.chrom_web.player.multiplayer.ChatManager;
+import ga.chrom_web.player.multiplayer.ConnectionManager;
+import ga.chrom_web.player.multiplayer.Manager;
+import ga.chrom_web.player.multiplayer.PlayerManager;
+import ga.chrom_web.player.multiplayer.ui.player.PlayerViewModel;
+import ga.chrom_web.player.multiplayer.SharedPreferenceHelper;
 import ga.chrom_web.player.multiplayer.ui.signin.LoginViewModel;
 
 @Singleton

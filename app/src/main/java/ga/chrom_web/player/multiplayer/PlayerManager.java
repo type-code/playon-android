@@ -20,53 +20,53 @@ public class PlayerManager extends Manager {
 
     @Override
     protected void subscribeOnEvents() {
-        getSocket().on(EVENT_PLAY, args -> {
+        socket.on(EVENT_PLAY, args -> {
             Utils.debugLog("PLAY: " + args[0]);
             if (playerListener != null) {
-                playerListener.onPlay(JsonUtil.jsonToObject(args[0], VideoData.class));
+                playerListener.onPlay(JsonUtil.INSTANCE.jsonToObject(args[0], VideoData.class));
             }
         });
-        getSocket().on(EVENT_PAUSE, args -> {
+        socket.on(EVENT_PAUSE, args -> {
             Utils.debugLog("PAUSE: " + args[0]);
             if (playerListener != null) {
-                playerListener.onPause(JsonUtil.jsonToObject(args[0], VideoData.class));
+                playerListener.onPause(JsonUtil.INSTANCE.jsonToObject(args[0], VideoData.class));
             }
         });
-        getSocket().on(EVENT_REWIND, args -> {
+        socket.on(EVENT_REWIND, args -> {
             Utils.debugLog("REWIND: " + args[0]);
             if (playerListener != null) {
-                playerListener.onRewind(JsonUtil.jsonToObject(args[0], VideoData.class));
+                playerListener.onRewind(JsonUtil.INSTANCE.jsonToObject(args[0], VideoData.class));
             }
         });
-        getSocket().on(EVENT_LIGHT, args -> {
+        socket.on(EVENT_LIGHT, args -> {
             Utils.debugLog("LIGHT CHANGED: " + args[0]);
             if (playerListener != null) {
-                playerListener.onLightToggle(JsonUtil.parseToggleLight(args[0]));
+                playerListener.onLightToggle(JsonUtil.INSTANCE.parseToggleLight(args[0]));
             }
         });
-        getSocket().on(EVENT_LOAD, args -> {
+        socket.on(EVENT_LOAD, args -> {
             Utils.debugLog("New video loaded: " + args[0]);
             if (playerListener != null) {
-                playerListener.onNewVideoLoaded(JsonUtil.jsonToObject(args[0], VideoData.class));
+                playerListener.onNewVideoLoaded(JsonUtil.INSTANCE.jsonToObject(args[0], VideoData.class));
             }
         });
     }
 
     public void play() {
         printEmit(EVENT_PLAY);
-        getSocket().emit(EVENT_PLAY, EMPTY_ARGS);
+        socket.emit(EVENT_PLAY, EMPTY_ARGS);
     }
 
     public void pause() {
         printEmit(EVENT_PAUSE);
-        getSocket().emit(EVENT_PAUSE, EMPTY_ARGS);
+        socket.emit(EVENT_PAUSE, EMPTY_ARGS);
     }
 
     public void rewind(int secondsFromStart) {
         printEmit(EVENT_REWIND);
         HashMap<String, String> map = new HashMap<>();
         map.put("time", String.valueOf(secondsFromStart));
-        getSocket().emit(EVENT_REWIND, new JSONObject(map));
+        socket.emit(EVENT_REWIND, new JSONObject(map));
     }
 
     public void loadVideo(String link) {
@@ -79,7 +79,7 @@ public class PlayerManager extends Manager {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        getSocket().emit(EVENT_LOAD, jsonObject);
+        socket.emit(EVENT_LOAD, jsonObject);
 
     }
 
@@ -88,12 +88,12 @@ public class PlayerManager extends Manager {
      */
     public void videoTime() {
         printEmit(EVENT_VIDEO_TIME);
-        getSocket().emit(EVENT_VIDEO_TIME, EMPTY_ARGS);
+        socket.emit(EVENT_VIDEO_TIME, EMPTY_ARGS);
     }
 
     public void toggleLight() {
         printEmit(EVENT_LIGHT);
-        getSocket().emit(EVENT_LIGHT, EMPTY_ARGS);
+        socket.emit(EVENT_LIGHT, EMPTY_ARGS);
     }
 
     public interface PlayerListener {
