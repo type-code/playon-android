@@ -6,9 +6,9 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import ga.chrom_web.player.multiplayer.ChatManager;
-import ga.chrom_web.player.multiplayer.ConnectionManager;
-import ga.chrom_web.player.multiplayer.PlayerManager;
+import ga.chrom_web.player.multiplayer.ChatSocketManager;
+import ga.chrom_web.player.multiplayer.ConnectionSocketManager;
+import ga.chrom_web.player.multiplayer.PlayerSocketManager;
 import ga.chrom_web.player.multiplayer.SharedPreferenceHelper;
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -18,6 +18,7 @@ public class AppModule {
 
     private static final String HOST = "http://player.chrom-web.ga:8080";
 //    private static final String HOST = "http://93.175.221.13:8080";
+//    private static final String HOST = "http://1:1:1:1:1080";
 
     @Provides
     @Singleton
@@ -27,20 +28,20 @@ public class AppModule {
 
     @Singleton
     @Provides
-    public PlayerManager providesPlayerManager() {
-        return new PlayerManager();
+    public PlayerSocketManager providesPlayerManager() {
+        return new PlayerSocketManager();
     }
 
     @Singleton
     @Provides
-    public ConnectionManager providesConnectionManager() {
-        return new ConnectionManager();
+    public ConnectionSocketManager providesConnectionManager() {
+        return new ConnectionSocketManager();
     }
 
     @Singleton
     @Provides
-    public ChatManager providesChatManager() {
-        return new ChatManager();
+    public ChatSocketManager providesChatManager() {
+        return new ChatSocketManager();
     }
 
     @Singleton

@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -19,7 +18,6 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment
 import ga.chrom_web.player.multiplayer.BuildConfig
 import ga.chrom_web.player.multiplayer.R
 import ga.chrom_web.player.multiplayer.Utils
-import ga.chrom_web.player.multiplayer.data.VideoData
 
 class CustomYoutubePlayerFragment : Fragment(), YouTubePlayer.OnInitializedListener {
 
@@ -32,7 +30,7 @@ class CustomYoutubePlayerFragment : Fragment(), YouTubePlayer.OnInitializedListe
     private var popupWindow: PopupWindow? = null
     private var mContext: Context? = null
 
-    var youtubePlayerListener: PlayerListener? = null
+    var playerListener: PlayerListener? = null
     var youTubeFragment: YouTubePlayerSupportFragment? = null
 
 
@@ -70,7 +68,7 @@ class CustomYoutubePlayerFragment : Fragment(), YouTubePlayer.OnInitializedListe
 
     fun loadVideo(link: String, time: Int, isPlaying: Boolean) {
         if (!mIsPlayerInitialized) {
-            return;
+            return
         }
         // loadVideo plays video after load finish and cueVideo not
         if (isPlaying) {
@@ -103,10 +101,10 @@ class CustomYoutubePlayerFragment : Fragment(), YouTubePlayer.OnInitializedListe
     override fun onInitializationSuccess(provider: YouTubePlayer.Provider, player: YouTubePlayer,
                                          wasRestored: Boolean) {
         Utils.debugLog("Player init success, wasRestored " + wasRestored)
-        mIsPlayerInitialized = true;
+        mIsPlayerInitialized = true
         mPlayer = player
         mPlayer?.setPlayerStyle(YouTubePlayer.PlayerStyle.CHROMELESS)
-        youtubePlayerListener?.onPlayerInitialized()
+        playerListener?.onPlayerInitialized()
         mPlayer?.setPlayerStateChangeListener(object : YouTubePlayer.PlayerStateChangeListener {
             override fun onLoading() {}
 
@@ -134,7 +132,7 @@ class CustomYoutubePlayerFragment : Fragment(), YouTubePlayer.OnInitializedListe
         val inflater = LayoutInflater.from(mContext)
         popupView = inflater.inflate(R.layout.custom_youtube_player_controls, null, false)
 
-        val leftTopPosition = Utils.getStatusBarHeight(mContext);
+        val leftTopPosition = Utils.getStatusBarHeight(mContext)
 
         popupWindow = PopupWindow(popupView, youtubePlayerWidth, youtubePlayerHeight)
         popupWindow?.showAtLocation(parent, Gravity.TOP.or(Gravity.START), 0, leftTopPosition)
@@ -148,26 +146,27 @@ class CustomYoutubePlayerFragment : Fragment(), YouTubePlayer.OnInitializedListe
 
                     override fun onStopTrackingTouch(seekBar: SeekBar) {
                         updateProgress(seekBar)
-                        youtubePlayerListener?.onRewind(popupView.findViewById<SeekBar>(R.id.videoProgress).progress)
+                        playerListener?.onRewind(popupView.findViewById<SeekBar>(R.id.videoProgress).progress)
                     }
                 })
 
         popupView.findViewById<View>(R.id.imgPlay).setOnClickListener({
-            youtubePlayerListener?.onClickPlay()
+            playerListener?.onClickPlay()
         })
 
         popupView.findViewById<View>(R.id.imgPause).setOnClickListener({
-            youtubePlayerListener?.onClickPause()
+            playerListener?.onClickPause()
         })
 
 
         popupView.findViewById<View>(R.id.imgUpload).setOnClickListener({
-            youtubePlayerListener?.onClickUpload()
+            playerListener?.onClickUpload()
         })
-        popupView.findViewById<View>(R.id.imgFullscreen).setOnClickListener({ view ->
+        popupView.findViewById<View>(R.id.imgFullscreen).setOnClickListener({
+            playerListener?.onClickFullscreen()
             // TODO: go to fullscreen
         })
-        popupView.setOnClickListener({ view ->
+        popupView.setOnClickListener({
             if (mIsControlsShown) {
                 hidePlayerControls()
             } else {
@@ -265,6 +264,7 @@ class CustomYoutubePlayerFragment : Fragment(), YouTubePlayer.OnInitializedListe
 
         fun onClickUpload()
 
+        fun onClickFullscreen()
     }
 
 }

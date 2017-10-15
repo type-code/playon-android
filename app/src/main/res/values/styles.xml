@@ -8,4 +8,9 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="AppTheme.Launch" parent="AppTheme">
+        <!-- TODO: get splashcreen image-->
+        <!--<item name="android:windowBackground">@drawable/kappa</item>-->
+    </style>
+
 </resources>

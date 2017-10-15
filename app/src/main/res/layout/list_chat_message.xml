@@ -13,6 +13,10 @@
             type="ga.chrom_web.player.multiplayer.data.ChatMessage" />
 
         <variable
+            name="areSmilesInMessage"
+            type="boolean" />
+
+        <variable
             name="topLineVisible"
             type="boolean" />
 
@@ -45,7 +49,7 @@
             android:layout_height="12sp"
             android:layout_marginLeft="7dp"
             android:layout_marginStart="7dp"
-            android:layout_marginTop="11dp"
+            android:layout_marginTop="12dp"
             app:circleColor="@{message.getColor()}"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -63,14 +67,18 @@
 
         <TextView
             android:id="@+id/tvText"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dp"
-            android:layout_marginStart="4dp"
             android:padding="8dp"
-            android:text="@{Html.fromHtml(message.getFullMessage())}"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="@{areSmilesInMessage ? @dimen/paddingWithSmile : @dimen/paddingWithoutSmile}"
+            android:paddingBottom="8dp"
             android:textColor="@color/chat_message_color"
+            app:layout_constraintLeft_toRightOf="@+id/circleView"
             app:layout_constraintStart_toEndOf="@+id/circleView"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
     </android.support.constraint.ConstraintLayout>

@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -45,6 +46,8 @@ dependencies {
     implementation group: 'com.google.dagger', name: 'dagger', version: '2.11'
 
     implementation 'com.pes.materialcolorpicker:library:1.2.1'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.1.0'
 
     implementation "android.arch.lifecycle:runtime:1.0.0"
     implementation "android.arch.lifecycle:extensions:1.0.0-alpha9-1"
@@ -65,4 +68,10 @@ dependencies {
     implementation files('libs/YouTubeAndroidPlayerApi.jar')
 
     annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
+    kapt "com.google.dagger:dagger-compiler:2.11"
+    kapt 'com.android.databinding:compiler:3.0.0-rc1'
 }
+kapt {
+    generateStubs = true
+}
+

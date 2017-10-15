@@ -12,6 +12,10 @@
             name="playerViewModel"
             type="ga.chrom_web.player.multiplayer.ui.player.PlayerViewModel" />
 
+        <variable
+            name="isSmileKeyboardOpen"
+            type="boolean" />
+
     </data>
 
     <RelativeLayout
@@ -36,12 +40,10 @@
             android:id="@+id/containerSendMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
+            android:layout_above="@+id/smilesKeyboard"
             android:background="#ffffff"
             android:orientation="horizontal"
             android:paddingBottom="8dp"
-            android:paddingLeft="6dp"
-            android:paddingStart="6dp"
             android:paddingTop="8dp"
             android:weightSum="1">
 
@@ -50,10 +52,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="32dp"
                 android:layout_gravity="bottom"
+                android:paddingLeft="6dp"
+                android:paddingStart="6dp"
                 android:layout_weight="0.45"
                 android:background="#ffffff"
                 android:scaleType="fitCenter"
-                android:src="@drawable/kappa" />
+                android:src="@{isSmileKeyboardOpen ? @android:drawable/ic_menu_sort_alphabetically : @drawable/kappa}" />
 
             <EditText
                 android:id="@+id/etMessage"
@@ -61,11 +65,11 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.13"
                 android:background="@null"
-                android:text="@={playerViewModel.messageField}"
                 android:hint="@string/enter_message_hint"
                 android:maxLines="2"
                 android:paddingLeft="8dp"
                 android:paddingStart="8dp"
+                android:text="@={playerViewModel.messageField}"
                 android:textSize="15sp" />
 
             <ImageButton
@@ -78,6 +82,12 @@
                 android:onClick="@{() -> playerViewModel.send()}"
                 android:src="@drawable/ic_message" />
         </LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/smilesKeyboard"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_alignParentBottom="true" />
 
     </RelativeLayout>
 </layout>

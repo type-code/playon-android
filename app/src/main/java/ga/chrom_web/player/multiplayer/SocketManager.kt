@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 import io.socket.client.Socket
 
-abstract class Manager {
+abstract class SocketManager {
 
     companion object {
 
@@ -31,6 +31,7 @@ abstract class Manager {
     init {
         App.getComponent().inject(this)
         subscribeOnEvents()
+
     }
 
     protected abstract fun subscribeOnEvents()

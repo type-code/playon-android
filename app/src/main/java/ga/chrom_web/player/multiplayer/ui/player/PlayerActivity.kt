@@ -7,8 +7,7 @@ import ga.chrom_web.player.multiplayer.R
 
 class PlayerActivity : AppCompatActivity() {
 
-
-    private lateinit var playerFragment: PlayerFragment
+    private lateinit var mPlayerFragment: PlayerFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -16,11 +15,16 @@ class PlayerActivity : AppCompatActivity() {
 
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         if (savedInstanceState == null) {
-            playerFragment = PlayerFragment()
+            mPlayerFragment = PlayerFragment()
             supportFragmentManager.beginTransaction()
-                    .replace(R.id.container, playerFragment)
+                    .replace(R.id.container, mPlayerFragment)
                     .commit()
         }
+    }
 
+    override fun onBackPressed() {
+        if (!mPlayerFragment.onBackPressed()) {
+            super.onBackPressed()
+        }
     }
 }

@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 import ga.chrom_web.player.multiplayer.data.VideoData;
 
-public class PlayerManager extends Manager {
+public class PlayerSocketManager extends SocketManager {
 
     private static final Object EMPTY_ARGS = new Object();
 
@@ -23,31 +23,31 @@ public class PlayerManager extends Manager {
         socket.on(EVENT_PLAY, args -> {
             Utils.debugLog("PLAY: " + args[0]);
             if (playerListener != null) {
-                playerListener.onPlay(JsonUtil.INSTANCE.jsonToObject(args[0], VideoData.class));
+                playerListener.onPlay(JsonUtil.jsonToObject(args[0], VideoData.class));
             }
         });
         socket.on(EVENT_PAUSE, args -> {
             Utils.debugLog("PAUSE: " + args[0]);
             if (playerListener != null) {
-                playerListener.onPause(JsonUtil.INSTANCE.jsonToObject(args[0], VideoData.class));
+                playerListener.onPause(JsonUtil.jsonToObject(args[0], VideoData.class));
             }
         });
         socket.on(EVENT_REWIND, args -> {
             Utils.debugLog("REWIND: " + args[0]);
             if (playerListener != null) {
-                playerListener.onRewind(JsonUtil.INSTANCE.jsonToObject(args[0], VideoData.class));
+                playerListener.onRewind(JsonUtil.jsonToObject(args[0], VideoData.class));
             }
         });
         socket.on(EVENT_LIGHT, args -> {
             Utils.debugLog("LIGHT CHANGED: " + args[0]);
             if (playerListener != null) {
-                playerListener.onLightToggle(JsonUtil.INSTANCE.parseToggleLight(args[0]));
+                playerListener.onLightToggle(JsonUtil.parseToggleLight(args[0]));
             }
         });
         socket.on(EVENT_LOAD, args -> {
             Utils.debugLog("New video loaded: " + args[0]);
             if (playerListener != null) {
-                playerListener.onNewVideoLoaded(JsonUtil.INSTANCE.jsonToObject(args[0], VideoData.class));
+                playerListener.onNewVideoLoaded(JsonUtil.jsonToObject(args[0], VideoData.class));
             }
         });
     }
@@ -70,7 +70,6 @@ public class PlayerManager extends Manager {
     }
 
     public void loadVideo(String link) {
-        // TODO: argument [boolean] playlist
         printEmit(EVENT_LOAD);
         JSONObject jsonObject = new JSONObject();
         try {

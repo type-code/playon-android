@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 
-import ga.chrom_web.player.multiplayer.Manager;
+import ga.chrom_web.player.multiplayer.SocketManager;
 import ga.chrom_web.player.multiplayer.R;
 
 public class ChatNotification extends ChatItem implements Serializable {
@@ -40,17 +40,17 @@ public class ChatNotification extends ChatItem implements Serializable {
     public String getFullNotification(Context context) {
         // TODO: think about it
         switch (event) {
-            case Manager.EVENT_JOIN:
+            case SocketManager.EVENT_JOIN:
                 return getNick() + " " + context.getString(R.string.chat_notification_joined);
-            case Manager.EVENT_LOAD:
+            case SocketManager.EVENT_LOAD:
                 return getNick() + " " + context.getString(R.string.chat_notification_load);
-            case Manager.EVENT_PAUSE:
+            case SocketManager.EVENT_PAUSE:
                 return getNick() + " " + context.getString(R.string.chat_notification_pause);
-            case Manager.EVENT_PLAY:
+            case SocketManager.EVENT_PLAY:
                 return getNick() + " " + context.getString(R.string.chat_notification_play);
-            case Manager.EVENT_REWIND:
+            case SocketManager.EVENT_REWIND:
                 return getNick() + " " + context.getString(R.string.chat_notification_rewind) + " " + additionalInfo;
-            case Manager.EVENT_DISCONNECT:
+            case SocketManager.EVENT_DISCONNECT:
                 return getNick() + " " + context.getString(R.string.chat_notification_disconnect);
             default:
                 return getNick() + " " + event;
@@ -59,17 +59,17 @@ public class ChatNotification extends ChatItem implements Serializable {
 
     public int getColor() {
         switch (event) {
-            case Manager.EVENT_JOIN:
+            case SocketManager.EVENT_JOIN:
                 return Color.parseColor(COLOR_JOIN);
-            case Manager.EVENT_LOAD:
+            case SocketManager.EVENT_LOAD:
                 return Color.parseColor(COLOR_LOAD);
-            case Manager.EVENT_PAUSE:
+            case SocketManager.EVENT_PAUSE:
                 return Color.parseColor(COLOR_PAUSE);
-            case Manager.EVENT_PLAY:
+            case SocketManager.EVENT_PLAY:
                 return Color.parseColor(COLOR_PLAY);
-            case Manager.EVENT_REWIND:
+            case SocketManager.EVENT_REWIND:
                 return Color.parseColor(COLOR_REWIND);
-            case Manager.EVENT_DISCONNECT:
+            case SocketManager.EVENT_DISCONNECT:
                 return Color.parseColor(COLOR_DISCONNECT);
             default:
                 return Color.WHITE;

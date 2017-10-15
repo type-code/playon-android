@@ -2,6 +2,11 @@ package ga.chrom_web.player.multiplayer.di;
 
 import android.app.Application;
 
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+
+import ga.chrom_web.player.multiplayer.BuildConfig;
+import io.fabric.sdk.android.Fabric;
 
 
 public class App extends Application {
@@ -12,7 +17,9 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         // TODO: turn off crashlytics for a while
-//        Fabric.with(this, new Crashlytics());
+        if (!BuildConfig.BUILD_TYPE.equals("debug")) {
+            Fabric.with(this, new Crashlytics());
+        }
         component = buildComponent();
     }
 
