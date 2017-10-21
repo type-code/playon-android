@@ -20,6 +20,8 @@ abstract class SocketManager {
         const val EVENT_VIDEO_TIME = "video_time"
         const val EVENT_LIGHT = "light"
         const val EVENT_LOAD = "load"
+        const val EVENT_SYNC = "sync"
+        const val EVENT_CLICK = "click"
 
         const val EVENT_MESSAGE = "message"
     }

@@ -5,11 +5,12 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.MutableLiveData;
 import android.databinding.ObservableField;
+import android.support.annotation.NonNull;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import javax.inject.Inject;
 
@@ -29,12 +30,14 @@ import ga.chrom_web.player.multiplayer.di.App;
 
 public class PlayerViewModel extends AndroidViewModel {
 
-    private MutableLiveData<HashMap<String, String>> mSmilesPaths;
+    private MutableLiveData<LinkedHashMap<String, String>> mSmilesPaths;
+    private MutableLiveData<LinkedHashMap<String, String>> mWithBigSmilesPaths;
     private MutableLiveData<Boolean> mShouldPlay;
     private MutableLiveData<String> mVideoLink;
     private MutableLiveData<Integer> mVideoTime;
     private MutableLiveData<Boolean> mIsLightWhite;
     private MutableLiveData<ChatItem> mMessage;
+    private MutableLiveData<VideoData> mTimeSync;
     private MutableLiveData<PlayerData> mPlayerData;
     public ObservableField<String> messageField;
     @Inject
@@ -56,52 +59,54 @@ public class PlayerViewModel extends AndroidViewModel {
         mMessage = new MutableLiveData<>();
         mPlayerData = new MutableLiveData<>();
         mSmilesPaths = new MutableLiveData<>();
+        mTimeSync = new MutableLiveData<>();
+        mWithBigSmilesPaths = new MutableLiveData<>();
         messageField = new ObservableField<>();
 
         mConnectionManager.setConnectionListener(new ConnectionSocketManager.ConnectionListener() {
             @Override
-            public void connected(PlayerData playerData) {
+            public void connected(@NonNull PlayerData playerData) {
                 mPlayerData.postValue(playerData);
                 mConnectionManager.join(prefs.getNick());
             }
 
             @Override
             public void joined(String nick) {
-                postNotification(nick, SocketManager.EVENT_JOIN);
+                postChatNotification(nick, SocketManager.EVENT_JOIN);
             }
 
             @Override
             public void someoneDisconnected(String nick) {
-                postNotification(nick, SocketManager.EVENT_DISCONNECT);
+                postChatNotification(nick, SocketManager.EVENT_DISCONNECT);
             }
         });
 
         mPlayerManager.setPlayerListener(new PlayerSocketManager.PlayerListener() {
             @Override
-            public void onPlay(VideoData videoData) {
+            public void onPlay(@NotNull VideoData videoData) {
                 mPlayerData.getValue().setTime(videoData.getTime());
                 mPlayerData.getValue().setPlaying(true);
 
                 mVideoTime.postValue(videoData.getTimeInMilli());
                 mShouldPlay.postValue(true);
-                postNotification(videoData.getNick(), SocketManager.EVENT_PLAY);
+                postChatNotification(videoData.getNick(), SocketManager.EVENT_PLAY);
 
             }
 
             @Override
-            public void onPause(VideoData videoData) {
+            public void onPause(@NotNull VideoData videoData) {
                 mPlayerData.getValue().setPlaying(false);
 
                 mShouldPlay.postValue(false);
-                postNotification(videoData.getNick(), SocketManager.EVENT_PAUSE);
+                postChatNotification(videoData.getNick(), SocketManager.EVENT_PAUSE);
             }
 
             @Override
-            public void onRewind(VideoData videoData) {
+            public void onRewind(@NotNull VideoData videoData) {
                 mPlayerData.getValue().setTime(videoData.getTime());
 
                 mVideoTime.postValue(videoData.getTimeInMilli());
-                postNotification(videoData.getNick(), SocketManager.EVENT_REWIND,
+                postChatNotification(videoData.getNick(), SocketManager.EVENT_REWIND,
                         Utils.formatTimeSeconds(videoData.getTime()));
             }
 
@@ -117,22 +122,25 @@ public class PlayerViewModel extends AndroidViewModel {
                 mPlayerData.getValue().setVideo(videoData.getVideo());
 
                 mVideoLink.postValue(videoData.getVideo());
-                postNotification(videoData.getNick(), SocketManager.EVENT_LOAD);
+                postChatNotification(videoData.getNick(), SocketManager.EVENT_LOAD);
+            }
+
+            @Override
+            public void onTimeSync(@NotNull VideoData videoData) {
+                mTimeSync.postValue(videoData);
             }
         });
         mChatManager.setMChatListener(new ChatSocketManager.ChatListener() {
             @Override
-            public void onMessage(ChatMessage chatMessage) {
+            public void onMessage(@NonNull ChatMessage chatMessage) {
                 mMessage.postValue(chatMessage);
             }
         });
 
         SmilesLoader smilesLoader = new SmilesLoader();
-        smilesLoader.getSmilesPaths(new SmilesLoader.OnSmilesPathReadyListener() {
-            @Override
-            public void onSmilesReady(@NotNull HashMap<String, String> smiles) {
-                mSmilesPaths.postValue(smiles);
-            }
+        smilesLoader.getSmilesPaths(false, smiles -> mSmilesPaths.postValue(smiles));
+        smilesLoader.getSmilesPaths(true, smiles -> {
+            mWithBigSmilesPaths.postValue(smiles);
         });
     }
 
@@ -160,9 +168,11 @@ public class PlayerViewModel extends AndroidViewModel {
         mPlayerManager.loadVideo(link);
     }
 
-
     public void send() {
-        mChatManager.sendMessage(messageField.get(), prefs.getHexColor());
+        if (messageField.get() == null || messageField.get().length() < 1) {
+            return;
+        }
+        mChatManager.sendMessage(messageField.get(), prefs.getColor());
         messageField.set("");
     }
 
@@ -173,7 +183,7 @@ public class PlayerViewModel extends AndroidViewModel {
      * @param smile string code of smile
      */
     public void sendSmile(String smile) {
-        mChatManager.sendMessage(smile, prefs.getHexColor());
+        mChatManager.sendMessage(smile, prefs.getColor());
     }
 
     public void play() {
@@ -184,11 +194,11 @@ public class PlayerViewModel extends AndroidViewModel {
         mPlayerManager.pause();
     }
 
-    private void postNotification(String nick, String event) {
-        postNotification(nick, event, null);
+    private void postChatNotification(String nick, String event) {
+        postChatNotification(nick, event, null);
     }
 
-    private void postNotification(String nick, String event, @Nullable String additionalInfo) {
+    private void postChatNotification(String nick, String event, @Nullable String additionalInfo) {
         ChatNotification notification = new ChatNotification(nick, event, additionalInfo);
         mMessage.postValue(notification);
     }
@@ -217,7 +227,15 @@ public class PlayerViewModel extends AndroidViewModel {
         return mMessage;
     }
 
-    public MutableLiveData<HashMap<String, String>> getSmilesPaths() {
+    public MutableLiveData<LinkedHashMap<String, String>> getSmilesPaths() {
         return mSmilesPaths;
+    }
+
+    public MutableLiveData<LinkedHashMap<String, String>> getWithBigSmilesPaths() {
+        return mWithBigSmilesPaths;
+    }
+
+    public MutableLiveData<VideoData> getTimeSync() {
+        return mTimeSync;
     }
 }

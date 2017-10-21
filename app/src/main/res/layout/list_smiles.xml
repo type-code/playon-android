@@ -2,8 +2,8 @@
 
 <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/imgSmile"
-    android:layout_width="25dp"
-    android:layout_height="25dp"
-    android:layout_margin="8dp"
-    android:scaleType="fitXY"
-    android:src="@drawable/kappa" />
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:padding="8dp"
+    android:scaleType="fitCenter"
+    android:background="?attr/selectableItemBackground" />

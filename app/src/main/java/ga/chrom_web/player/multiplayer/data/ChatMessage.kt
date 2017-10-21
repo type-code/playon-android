@@ -22,5 +22,7 @@ class ChatMessage : ChatItem(), Serializable {
 
     fun getFullMessage():String = nick + ": " + text
 
+    fun getText(): String? = text
+
     override fun toString(): String = "ChatMessage(text=$text, color=$color)"
 }

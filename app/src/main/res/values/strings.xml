@@ -10,4 +10,6 @@
     <string name="chat_notification_disconnect">disconnected</string>
 
     <string name="enter_message_hint">Enter message here…</string>
+    <string name="emote_stickers">Stickers</string>
+    <string name="emote_smiles">Smiles</string>
 </resources>

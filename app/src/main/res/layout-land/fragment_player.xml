@@ -53,23 +53,72 @@
                 android:layout_height="32dp"
                 android:layout_gravity="bottom"
                 android:layout_weight="0.45"
-                android:background="#ffffff"
+                android:background="#d5d5d5"
+                android:padding="8dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/kappa"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent" />
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/smilesKeyboard"
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/emotesContainer"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:background="#ffffff"
                 android:visibility="@{isSmileKeyboardOpen ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toTopOf="@+id/imgSmiles"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/emotesControls"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:background="#d5d5d5"
+                    android:paddingBottom="8dp"
+                    android:paddingTop="8dp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <Switch
+                        android:id="@+id/smilesKeyboardSwitch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginStart="16dp"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvSmileHeader"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:gravity="center_vertical"
+                        android:paddingEnd="8dp"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:paddingStart="8dp"
+                        android:text="Smiles"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/smilesKeyboardSwitch"
+                        app:layout_constraintLeft_toRightOf="@+id/smilesKeyboardSwitch"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/smilesKeyboardSwitch" />
+                </android.support.constraint.ConstraintLayout>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/smilesKeyboard"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="#e0e0e0"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/emotesControls" />
+
+            </android.support.constraint.ConstraintLayout>
 
         </android.support.constraint.ConstraintLayout>
 

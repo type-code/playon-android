@@ -7,7 +7,7 @@ import ga.chrom_web.player.multiplayer.R
 
 class PlayerActivity : AppCompatActivity() {
 
-    private lateinit var mPlayerFragment: PlayerFragment
+    private var mPlayerFragment: PlayerFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,7 +23,8 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (!mPlayerFragment.onBackPressed()) {
+        val playerOnBackPressed = mPlayerFragment?.onBackPressed()
+        if (playerOnBackPressed == null || !playerOnBackPressed) {
             super.onBackPressed()
         }
     }

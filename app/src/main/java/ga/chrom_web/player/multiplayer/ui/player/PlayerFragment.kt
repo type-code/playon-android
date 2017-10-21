@@ -1,5 +1,6 @@
 package ga.chrom_web.player.multiplayer.ui.player
 
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
@@ -24,7 +25,6 @@ import ga.chrom_web.player.multiplayer.ui.SmilesAdapter
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import java.util.*
 
-
 class PlayerFragment : Fragment() {
 
     companion object {
@@ -34,7 +34,7 @@ class PlayerFragment : Fragment() {
         private const val MESSAGES = "messages"
     }
 
-    private var mYoutubePlayerFragment: CustomYoutubePlayerFragment? = null
+    private lateinit var mYoutubePlayerFragment: CustomYoutubePlayerFragment
     private lateinit var mViewModel: PlayerViewModel
     private lateinit var mBinding: FragmentPlayerBinding
     private var mChatAdapter: ChatAdapter? = null
@@ -53,14 +53,12 @@ class PlayerFragment : Fragment() {
 
         // TODO: is it good or bad idea setRetainInstance(true)???
 
-        if (mYoutubePlayerFragment == null) {
-            mYoutubePlayerFragment = CustomYoutubePlayerFragment()
-            fragmentManager.beginTransaction()
-                    .replace(R.id.youtubeContainer, mYoutubePlayerFragment)
-                    .commit()
-        }
+        mYoutubePlayerFragment = CustomYoutubePlayerFragment()
+        fragmentManager.beginTransaction()
+                .replace(R.id.youtubeContainer, mYoutubePlayerFragment)
+                .commit()
 
-        mYoutubePlayerFragment!!.playerListener = object : CustomYoutubePlayerFragment.PlayerListener {
+        mYoutubePlayerFragment.playerListener = object : CustomYoutubePlayerFragment.PlayerListener {
             override fun onClickFullscreen() {
                 mIsOrientationChangedByButton = true
                 if (activity.requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
@@ -127,7 +125,7 @@ class PlayerFragment : Fragment() {
      */
     private fun hideSmilesKeyboard(withRequestLayout: Boolean) {
         if (screenOrientation == Configuration.ORIENTATION_PORTRAIT) {
-            mBinding.smilesKeyboard.layoutParams.height = 0
+            mBinding.emotesContainer.layoutParams.height = 0
             if (withRequestLayout) {
                 mBinding.smilesKeyboard.requestLayout()
             }
@@ -148,7 +146,7 @@ class PlayerFragment : Fragment() {
             if (isKeyboardVisible) {
                 Utils.hideKeyboard(activity)
             }
-            mBinding.smilesKeyboard.layoutParams.height = Utils.dpToPx(activity, KEYBOARD_HEIGHT_IN_DP).toInt()
+            mBinding.emotesContainer.layoutParams.height = Utils.dpToPx(activity, KEYBOARD_HEIGHT_IN_DP).toInt()
             if (withRequestLayout || !isKeyboardVisible) {
                 mBinding.smilesKeyboard.requestLayout()
             }
@@ -157,14 +155,17 @@ class PlayerFragment : Fragment() {
         mBinding.isSmileKeyboardOpen = true
     }
 
-    private fun initSmiles(smilePaths: HashMap<String, String>) {
+    private fun initSmiles(smilePaths: LinkedHashMap<String, String>) {
+
         KeyboardVisibilityEvent.setEventListener(activity) { isOpen ->
             if (isOpen) {
                 hideSmilesKeyboard(true)
             }
         }
 
-        mBinding.etMessage?.setOnClickListener { hideSmilesKeyboard(false) }
+        mBinding.etMessage?.setOnClickListener {
+            hideSmilesKeyboard(false)
+        }
 
         mBinding.imgSmiles.setOnClickListener {
             if (mIsSmilesLayoutVisible) {
@@ -180,30 +181,78 @@ class PlayerFragment : Fragment() {
             }
         }
 
-        val adapter = SmilesAdapter(convertSmilesPaths(smilePaths))
+        // only in portrait mode
+        mBinding.eraseSmile?.setOnClickListener {
+            eraseSmileOrLastLetter();
+        }
+
+        val smilesAdapter = SmilesAdapter(convertSmilesPaths(smilePaths))
+        smilesAdapter.mIsBigSmiles = mBinding.smilesKeyboardSwitch.isChecked
+        toggleSmileHeader(mBinding.smilesKeyboardSwitch.isChecked)
         val smilesInRow: Int
 
         if (screenOrientation == Configuration.ORIENTATION_PORTRAIT) {
             smilesInRow = SMILES_IN_ROW_PORTRAIT
-            adapter.onSmileClickListener = { smile ->
+            smilesAdapter.onSmileClickListener = { smile ->
                 mBinding.etMessage?.append(smile)
             }
         } else { // landscape
             smilesInRow = SMILES_IN_ROW_LANDSCAPE
-            adapter.onSmileClickListener = { smile ->
+            smilesAdapter.onSmileClickListener = { smile ->
                 mViewModel.sendSmile(smile)
+                hideSmilesKeyboard(true)
             }
+        }
+
+        mBinding.smilesKeyboardSwitch.setOnCheckedChangeListener { _, isChecked ->
+            toggleSmileHeader(isChecked)
+            smilesAdapter.mIsBigSmiles = isChecked
         }
 
         val layoutManager = GridLayoutManager(activity, smilesInRow)
         mBinding.smilesKeyboard.layoutManager = layoutManager
-        mBinding.smilesKeyboard.adapter = adapter
+        mBinding.smilesKeyboard.adapter = smilesAdapter
     }
 
-    private fun convertSmilesPaths(smilePaths: HashMap<String, String>): ArrayList<Pair<String, String>> {
+    private fun toggleSmileHeader(isChecked: Boolean) {
+        if (isChecked) {
+            mBinding.tvSmileHeader.text = getString(R.string.emote_stickers)
+        } else {
+            mBinding.tvSmileHeader.text = getString(R.string.emote_smiles)
+        }
+    }
+
+    private fun eraseSmileOrLastLetter() {
+        // TODO: make long click listener
+        mBinding.etMessage?.let { et ->
+            val smiles = mViewModel.smilesPaths.value
+            if (et.length() < 1 || smiles == null) {
+                return
+            }
+
+            val textLength: Int = et.length()
+            // erase smile
+            smiles.forEach {
+                val smile = it.key
+                val smilePosition = textLength - smile.length
+                if (textLength >= smile.length
+                        && et.text.substring(smilePosition).equals(smile)) {
+                    et.text.delete(smilePosition, textLength)
+                    return
+                }
+            }
+            // if there's no smile remove last letter
+            et.text.delete(textLength - 1, textLength)
+        }
+    }
+
+    /**
+     * Converts LinkedHashMap to ArrayList<Pair> to have access by position inside adapter
+     */
+    private fun convertSmilesPaths(smilePaths: LinkedHashMap<String, String>): ArrayList<Pair<String, String>> {
         val smilesArray = ArrayList<Pair<String, String>>()
         for (key in smilePaths.keys) {
-            val pair = Pair<String, String>(key, smilePaths.get(key)!!)
+            val pair = Pair(key, smilePaths.get(key)!!)
             smilesArray.add(pair)
         }
         return smilesArray
@@ -236,65 +285,77 @@ class PlayerFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         mViewModel = ViewModelProviders.of(this).get(PlayerViewModel::class.java)
 
-        mViewModel.videoLink.observe(this, android.arch.lifecycle.Observer { videoLink ->
+        mViewModel.videoLink.observe(this, Observer { videoLink ->
             videoLink?.let {
-                mYoutubePlayerFragment!!.loadVideo(videoLink)
+                mYoutubePlayerFragment.loadVideo(videoLink)
             }
         })
-        mViewModel.videoTime.observe(this, android.arch.lifecycle.Observer { timeInMillis ->
+        mViewModel.videoTime.observe(this, Observer { timeInMillis ->
             timeInMillis?.let {
-                mYoutubePlayerFragment!!.seekToMillis(timeInMillis)
+                mYoutubePlayerFragment.seekToMillis(timeInMillis)
             }
         })
-        mViewModel.shouldPlay.observe(this, android.arch.lifecycle.Observer { shouldPlay ->
+        mViewModel.shouldPlay.observe(this, Observer { shouldPlay ->
             shouldPlay?.let {
                 playOrPause(shouldPlay)
             }
         })
-        mViewModel.playerData.observe(this, android.arch.lifecycle.Observer { playerData ->
+        mViewModel.playerData.observe(this, Observer { playerData ->
             playerData?.let {
-                mYoutubePlayerFragment!!.loadVideo(playerData.getVideo(),
+                mYoutubePlayerFragment.loadVideo(playerData.getVideo(),
                         playerData.getTimeInMilli(), playerData.isPlaying())
             }
         })
-        mViewModel.message.observe(this, android.arch.lifecycle.Observer { message ->
+        mViewModel.message.observe(this, Observer { message ->
+            if (message == null) {
+                return@Observer
+            }
             mChatAdapter!!.addItem(message)
             // after adding item scroll to the very bottom
             mBinding.rvChat.post { mBinding.rvChat.smoothScrollToPosition(mChatAdapter!!.itemCount - 1) }
         })
-        mViewModel.smilesPaths.observe(this, android.arch.lifecycle.Observer { smilePaths ->
+        mViewModel.smilesPaths.observe(this, Observer { smilePaths ->
             mHandler.post {
                 smilePaths?.let {
                     initSmiles(smilePaths)
                 }
             }
         })
+        mViewModel.withBigSmilesPaths.observe(this, Observer { smiles ->
+            mChatAdapter?.setSmilePaths(smiles!!)
+        })
         mBinding.playerViewModel = mViewModel
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        // remove last item because it will be also post by LiveData
-        if (!mChatAdapter!!.items.isEmpty()) {
-            mChatAdapter!!.items.removeAt(mChatAdapter!!.items.size - 1)
+        mChatAdapter?.let { adapter ->
+            // make last message null to not post it on fragment retain
+            mViewModel.message.value = null
+            outState.putSerializable(MESSAGES, adapter.items)
         }
-        outState.putSerializable(MESSAGES, mChatAdapter!!.items)
+
+
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        mYoutubePlayerFragment!!.onParentViewDestroy()
+        mYoutubePlayerFragment.onParentViewDestroy()
         // TODO: make it better
         // if it is configuration then set time to retain it later
-        mViewModel.setCurrentTime(mYoutubePlayerFragment!!.getCurrentTimeMillis()!! / 1000)
+
+        val currentTimeMillis = mYoutubePlayerFragment.getCurrentTimeMillis()
+        currentTimeMillis?.let { time ->
+            mViewModel.setCurrentTime(time / 1000)
+        }
     }
 
 
     private fun playOrPause(shouldPlay: Boolean) {
         if (shouldPlay) {
-            mYoutubePlayerFragment!!.play()
+            mYoutubePlayerFragment.play()
         } else {
-            mYoutubePlayerFragment!!.pause()
+            mYoutubePlayerFragment.pause()
         }
     }
 

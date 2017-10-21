@@ -1,34 +1,31 @@
 package ga.chrom_web.player.multiplayer.ui
 
+import android.os.Handler
+import android.os.Looper
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import com.squareup.picasso.Picasso
 import ga.chrom_web.player.multiplayer.R
-import ga.chrom_web.player.multiplayer.Utils
-import java.io.File
+import ga.chrom_web.player.multiplayer.SmilesLoader
+import ga.chrom_web.player.multiplayer.di.App
 import java.util.ArrayList
+import javax.inject.Inject
 
 class SmilesAdapter : RecyclerView.Adapter<SmilesAdapter.SmilesViewHolder> {
 
     private var items: ArrayList<Pair<String, String>>
+    var mIsBigSmiles: Boolean = false;
     var onSmileClickListener: (String) -> Unit = {}
+    @Inject
+    lateinit var smilesLoader: SmilesLoader
 
     constructor(items: ArrayList<Pair<String, String>>) : super() {
+        App.getComponent().inject(this)
         this.items = items
     }
-
-    constructor() : super() {
-        this.items = ArrayList()
-    }
-
-//    fun setOnSmileClickListener(onSmileClickListener: (String) -> Unit ) {
-//        this.onSmileClickListener = onSmileClickListener
-//    }
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SmilesViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -36,15 +33,18 @@ class SmilesAdapter : RecyclerView.Adapter<SmilesAdapter.SmilesViewHolder> {
         return SmilesViewHolder(view)
     }
 
-    fun addAll(smiles: ArrayList<Pair<String, String>>) {
-        items.addAll(smiles)
-    }
-
     override fun onBindViewHolder(holder: SmilesViewHolder, position: Int) {
 
-        Picasso.with(holder.itemView.context).load("file:" + items[position].second).into(holder.imgSmile)
+        smilesLoader.loadSmile(items[position].first, onSmileReadyListener = { file ->
+            Picasso.with(holder.itemView.context).load(file).fit().into(holder.imgSmile)
+        })
+
         holder.imgSmile.setOnClickListener {
-            onSmileClickListener.invoke(items[position].first)
+            var smileToSend = items[position].first
+            if (mIsBigSmiles) {
+                smileToSend += "Big"
+            }
+            onSmileClickListener.invoke(smileToSend)
         }
     }
 

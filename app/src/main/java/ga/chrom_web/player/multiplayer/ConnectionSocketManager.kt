@@ -1,12 +1,9 @@
 package ga.chrom_web.player.multiplayer
 
 
-import org.json.JSONObject
-
-import java.util.HashMap
-
 import ga.chrom_web.player.multiplayer.data.PlayerData
 import io.socket.client.Socket
+import org.json.JSONObject
 
 class ConnectionSocketManager : SocketManager() {
 
@@ -37,6 +34,12 @@ class ConnectionSocketManager : SocketManager() {
             Utils.debugLog("Someone disconnect: " + args[0])
             connectionListener?.someoneDisconnected(JsonUtil.parseNick(args[0]))
         }
+        socket.on(Socket.EVENT_PING, {
+            Utils.debugLog("Ping")
+        })
+        socket.on(Socket.EVENT_PONG, {
+            Utils.debugLog("Pong")
+        })
         socket.on(Socket.EVENT_DISCONNECT) { _ -> Utils.debugLog("Disconnected!!!") }
         socket.on(Socket.EVENT_RECONNECT) { _ -> Utils.debugLog("Reconnect successful") }
     }

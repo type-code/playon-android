@@ -17,7 +17,7 @@ class ChatSocketManager : SocketManager() {
     }
 
     fun sendMessage(text: String, hexColor: String) {
-        val map = mapOf("text" to text, "hexColor" to hexColor)
+        val map = mapOf("text" to text, "color" to hexColor)
         socket.emit(SocketManager.EVENT_MESSAGE, JSONObject(map))
     }
 
