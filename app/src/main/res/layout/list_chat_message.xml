@@ -34,7 +34,7 @@
 
         <View
             android:id="@+id/topLine"
-            android:layout_width="4sp"
+            android:layout_width="2sp"
             android:layout_height="0dp"
             android:background="@{message.getColor()}"
             android:visibility="@{topLineVisible ? View.VISIBLE : View.GONE}"
@@ -56,7 +56,7 @@
 
         <View
             android:id="@+id/bottomLine"
-            android:layout_width="4sp"
+            android:layout_width="2sp"
             android:layout_height="0dp"
             android:background="@{message.getColor()}"
             android:visibility="@{bottomLineVisible ? View.VISIBLE : View.GONE}"

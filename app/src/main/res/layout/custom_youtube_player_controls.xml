@@ -18,8 +18,8 @@
             android:layout_height="wrap_content"
             android:contentDescription="Play"
             android:padding="12dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_play" />
+            android:src="@drawable/ic_play"
+            android:theme="@style/BorderlessRippleTheme" />
 
         <ImageView
             android:id="@+id/imgPause"
@@ -27,21 +27,24 @@
             android:layout_height="wrap_content"
             android:contentDescription="Pause"
             android:padding="12dp"
-            android:src="@drawable/ic_pause" />
+            android:src="@drawable/ic_pause"
+            android:theme="@style/BorderlessRippleTheme" />
 
         <ImageView
             android:id="@+id/imgUpload"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="12dp"
-            android:src="@drawable/ic_load" />
+            android:src="@drawable/ic_load"
+            android:theme="@style/BorderlessRippleTheme" />
 
         <ImageView
             android:id="@+id/imgFullscreen"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="12dp"
-            android:src="@drawable/ic_fullscreen" />
+            android:src="@drawable/ic_fullscreen"
+            android:theme="@style/BorderlessRippleTheme" />
     </LinearLayout>
     <!-- TODO tint for api < 21 -->
     <android.support.v7.widget.AppCompatSeekBar

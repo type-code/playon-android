@@ -35,11 +35,12 @@ class ConnectionSocketManager : SocketManager() {
             connectionListener?.someoneDisconnected(JsonUtil.parseNick(args[0]))
         }
         socket.on(Socket.EVENT_PING, {
-            Utils.debugLog("Ping")
+//            Utils.debugLog("Ping")
+            socket.emit(Socket.EVENT_PONG)
         })
-        socket.on(Socket.EVENT_PONG, {
-            Utils.debugLog("Pong")
-        })
+//        socket.on(Socket.EVENT_PONG, {
+//            Utils.debugLog("Pong")
+//        })
         socket.on(Socket.EVENT_DISCONNECT) { _ -> Utils.debugLog("Disconnected!!!") }
         socket.on(Socket.EVENT_RECONNECT) { _ -> Utils.debugLog("Reconnect successful") }
     }

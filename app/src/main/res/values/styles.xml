@@ -9,8 +9,12 @@
     </style>
 
     <style name="AppTheme.Launch" parent="AppTheme">
-        <!-- TODO: get splashcreen image-->
-        <!--<item name="android:windowBackground">@drawable/kappa</item>-->
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@drawable/splashscreen</item>
+    </style>
+
+    <style name="BorderlessRippleTheme" parent="ThemeOverlay.AppCompat">
+        <item name="colorControlHighlight">#ffffff</item>
     </style>
 
 </resources>

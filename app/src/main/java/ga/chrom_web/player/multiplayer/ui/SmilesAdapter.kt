@@ -36,7 +36,7 @@ class SmilesAdapter : RecyclerView.Adapter<SmilesAdapter.SmilesViewHolder> {
     override fun onBindViewHolder(holder: SmilesViewHolder, position: Int) {
 
         smilesLoader.loadSmile(items[position].first, onSmileReadyListener = { file ->
-            Picasso.with(holder.itemView.context).load(file).fit().into(holder.imgSmile)
+            Picasso.with(holder.itemView.context).load(file).into(holder.imgSmile)
         })
 
         holder.imgSmile.setOnClickListener {
@@ -44,6 +44,8 @@ class SmilesAdapter : RecyclerView.Adapter<SmilesAdapter.SmilesViewHolder> {
             if (mIsBigSmiles) {
                 smileToSend += "Big"
             }
+            // add empty space to make it look better
+            smileToSend += " "
             onSmileClickListener.invoke(smileToSend)
         }
     }

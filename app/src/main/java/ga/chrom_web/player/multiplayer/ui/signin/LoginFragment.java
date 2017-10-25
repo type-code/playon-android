@@ -1,6 +1,7 @@
 package ga.chrom_web.player.multiplayer.ui.signin;
 
 
+import android.arch.lifecycle.LifecycleActivity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -49,9 +50,7 @@ public class LoginFragment extends Fragment {
         // TODO: make it as binding
         mBinding.btnLogin.setOnClickListener(view -> {
             mViewModel.login(mBinding.etNick.getText().toString());
-            startActivity(new Intent(getActivity(), PlayerActivity.class));
-            getActivity().finish();
-
+            ((MainActivity) getActivity()).startPlayer();
         });
 
 

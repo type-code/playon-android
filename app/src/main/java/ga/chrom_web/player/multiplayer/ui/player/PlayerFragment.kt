@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.support.v4.app.Fragment
+import android.support.v4.view.MarginLayoutParamsCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
@@ -29,7 +30,7 @@ class PlayerFragment : Fragment() {
 
     companion object {
         private const val SMILES_IN_ROW_PORTRAIT = 7
-        private const val SMILES_IN_ROW_LANDSCAPE = 3
+        private const val SMILES_IN_ROW_LANDSCAPE = 4
         private const val KEYBOARD_HEIGHT_IN_DP = 263
         private const val MESSAGES = "messages"
     }
@@ -268,9 +269,10 @@ class PlayerFragment : Fragment() {
         layoutManager.stackFromEnd = true
     }
 
-    private fun createUploadDialog() {
+    private fun createUploadDialog(link: String = "") {
         val edittext = EditText(activity)
-        edittext.setText("https://www.youtube.com/watch?v=XGmFF82PE50")
+//        edittext.setText("https://www.youtube.com/watch?v=XGmFF82PE50")
+        edittext.setText(link)
         val adb = AlertDialog.Builder(activity)
         adb.setTitle("Enter youtube video link")
         // TODO: validate link for only youtube videos
@@ -304,6 +306,10 @@ class PlayerFragment : Fragment() {
             playerData?.let {
                 mYoutubePlayerFragment.loadVideo(playerData.getVideo(),
                         playerData.getTimeInMilli(), playerData.isPlaying())
+                // if we there's share link from other app open upload dialog
+                arguments?.getString(PlayerActivity.SHARE_LINK)?.let { shareLink ->
+                    createUploadDialog(shareLink)
+                }
             }
         })
         mViewModel.message.observe(this, Observer { message ->
@@ -342,8 +348,7 @@ class PlayerFragment : Fragment() {
         super.onDestroyView()
         mYoutubePlayerFragment.onParentViewDestroy()
         // TODO: make it better
-        // if it is configuration then set time to retain it later
-
+        // if it is configuration then save time to retain it later
         val currentTimeMillis = mYoutubePlayerFragment.getCurrentTimeMillis()
         currentTimeMillis?.let { time ->
             mViewModel.setCurrentTime(time / 1000)
@@ -370,6 +375,10 @@ class PlayerFragment : Fragment() {
             return true
         }
         return false
+    }
+
+    fun receiveShare(link: String) {
+        createUploadDialog(link)
     }
 
 }

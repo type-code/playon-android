@@ -140,8 +140,8 @@ public class PlayerViewModel extends AndroidViewModel {
         SmilesLoader smilesLoader = new SmilesLoader();
         smilesLoader.getSmilesPaths(false, smiles -> mSmilesPaths.postValue(smiles));
         smilesLoader.getSmilesPaths(true, smiles -> {
-            mWithBigSmilesPaths.postValue(smiles);
-        });
+        mWithBigSmilesPaths.postValue(smiles);
+    });
     }
 
     void playerInitialized() {
@@ -169,7 +169,7 @@ public class PlayerViewModel extends AndroidViewModel {
     }
 
     public void send() {
-        if (messageField.get() == null || messageField.get().length() < 1) {
+        if (messageField.get() == null || messageField.get().trim().length() < 1) {
             return;
         }
         mChatManager.sendMessage(messageField.get(), prefs.getColor());

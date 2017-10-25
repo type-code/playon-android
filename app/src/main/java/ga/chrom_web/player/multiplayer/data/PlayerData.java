@@ -49,4 +49,14 @@ public class PlayerData {
     public void setLight(boolean light) {
         isLight = light;
     }
+
+    @Override
+    public String toString() {
+        return "PlayerData{" +
+                "video='" + video + '\'' +
+                ", time=" + time +
+                ", isPlaying=" + isPlaying +
+                ", isLight=" + isLight +
+                '}';
+    }
 }

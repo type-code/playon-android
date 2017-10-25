@@ -18,8 +18,15 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment
 import ga.chrom_web.player.multiplayer.BuildConfig
 import ga.chrom_web.player.multiplayer.R
 import ga.chrom_web.player.multiplayer.Utils
+import android.util.TypedValue
+
+
 
 class CustomYoutubePlayerFragment : Fragment(), YouTubePlayer.OnInitializedListener {
+
+    companion object {
+        private const val CONTROLS_ANIMATION_DURATION: Long = 300
+    }
 
     private lateinit var popupView: View
     private var mPlayer: YouTubePlayer? = null
@@ -149,7 +156,7 @@ class CustomYoutubePlayerFragment : Fragment(), YouTubePlayer.OnInitializedListe
                         playerListener?.onRewind(popupView.findViewById<SeekBar>(R.id.videoProgress).progress)
                     }
                 })
-
+        setRipple()
         popupView.findViewById<View>(R.id.imgPlay).setOnClickListener({
             playerListener?.onClickPlay()
         })
@@ -158,14 +165,13 @@ class CustomYoutubePlayerFragment : Fragment(), YouTubePlayer.OnInitializedListe
             playerListener?.onClickPause()
         })
 
-
         popupView.findViewById<View>(R.id.imgUpload).setOnClickListener({
             playerListener?.onClickUpload()
         })
         popupView.findViewById<View>(R.id.imgFullscreen).setOnClickListener({
             playerListener?.onClickFullscreen()
-            // TODO: go to fullscreen
         })
+
         popupView.setOnClickListener({
             if (mIsControlsShown) {
                 hidePlayerControls()
@@ -177,13 +183,37 @@ class CustomYoutubePlayerFragment : Fragment(), YouTubePlayer.OnInitializedListe
     }
 
     private fun hidePlayerControls() {
-        popupView.animate().alpha(0f).setDuration(300)
-                .withEndAction { setControlsClickable(false) }
+        popupView.animate().alpha(0f).setDuration(CONTROLS_ANIMATION_DURATION)
+                .withEndAction {
+                    setControlsClickable(false)
+                    removeRipple()
+                }
     }
 
     private fun showPlayerControls() {
-        popupView.animate().alpha(1f).setDuration(300)
-                .withStartAction { setControlsClickable(true) }
+        popupView.animate().alpha(1f).setDuration(CONTROLS_ANIMATION_DURATION)
+                .withStartAction {
+                    setControlsClickable(true)
+                    // setting attr in XML creates visible bug when controls become visible
+                    // so reset it each time
+                    setRipple()
+                }
+    }
+
+    private fun setRipple() {
+        val outValue = TypedValue()
+        mContext!!.theme.resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, outValue, true)
+        popupView.findViewById<View>(R.id.imgPlay).setBackgroundResource(outValue.resourceId)
+        popupView.findViewById<View>(R.id.imgPause).setBackgroundResource(outValue.resourceId)
+        popupView.findViewById<View>(R.id.imgUpload).setBackgroundResource(outValue.resourceId)
+        popupView.findViewById<View>(R.id.imgFullscreen).setBackgroundResource(outValue.resourceId)
+    }
+
+    private fun removeRipple() {
+        popupView.findViewById<View>(R.id.imgPlay).background = null
+        popupView.findViewById<View>(R.id.imgPause).background = null
+        popupView.findViewById<View>(R.id.imgUpload).background = null
+        popupView.findViewById<View>(R.id.imgFullscreen).background = null
     }
 
     private fun setControlsClickable(clickable: Boolean) {
